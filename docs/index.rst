@@ -8,4 +8,5 @@ Welcome to the documentation.
     :maxdepth: 2
     :caption: Table of content
 
+    documentation
     data-model
