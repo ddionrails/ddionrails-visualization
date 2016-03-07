@@ -8,6 +8,7 @@
 		
 		<script src="./cat_uni.js"></script>	
 		<script src="./cat_bi_sex.js"></script>	
+		<script src="./cat_bi_perc.js"></script>	
 		<link rel="stylesheet" href="./style.css" />
                 
     </head>
@@ -30,7 +31,7 @@
 			//var barWidth = (w - margin_left - margin_right)/4;
 			var barWidth = 40;
 			
-			topMenu = ["frequencies","age", "sex", "sample", "wave"];
+			topMenu = ["frequencies","age", "sex", "sample", "wave", "percentage"];
 			sideMenu = ["absolute", "percentages", "missings", "weights"]
 				
 			var svg = d3.select("#menu")
@@ -105,6 +106,8 @@
 							case "frequencies": cat_uni();
 												break;
 							case "sex": 		cat_bi_sex();
+												break;
+							case "percentage":	cat_bi_perc();
 												break;
 							default:			console.log("Error.");
 					}});

@@ -1,23 +1,8 @@
-<!DOCTYPE HTML>
-	<html lang="de">
-		<head>
-			<title>Visualization</title>
-			<meta charset="utf-8">
-			
-			<!-- D3.js -->
-			<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
-			<script src="http://d3js.org/d3.v3.min.js"></script>
-			
-			<link rel="stylesheet" href="./style.css" />
-			
-		</head>
-
-		<body>
+function cat_bi_perc(){
 	
-		
-			
-			<script>
+		d3.selectAll(".chart").remove();
 
+	
 			var rawData = { 
 		  
 				"study":"soep-test",
@@ -36,11 +21,11 @@
 						"categories":{
 							"0":{
 								"label":"Mann",
-								"frequencies":[1, 2, 3, 4, 5],
+								"frequencies":[5, 2, 1, 1, 1],
 							},
 							"1":{
 								"label":"Frau",
-								"frequencies":[2, 3, 6, 8, 10],
+								"frequencies":[2, 3, 6, 0.9, 10],
 							}
 						},
 						"values":[-1,1,2,3,4],
@@ -62,35 +47,36 @@
 			labels = rawData.bi.sex.labels;
             var mapped =labels.map(function(dat,i){
                 return data.map(function(d){
-                    return {x: d[0], y: d[i+1] };
+                    return {x: d[0], y: d[i+1], label: dat};
                 })
             });
 			
-			console.log(mapped);
-			
-            var stacked = d3.layout.stack()
-				.offset('expand')
-				.values(function() {return mapped});
+            var stacked = d3.layout.stack().offset("expand")(mapped);
 								   
-			console.log(stacked)
-
+			var tip = d3.select("body").append("tip")	
+						.attr("class", "tooltip")				
+						.style("opacity", 0);
+						
 			var w =600;
 			var h = 300;
 			padding = 100;
-			barPadding = 20;
+			barPadding = 0.2;
+			barOutPadding = 0.1;
 								
 			var svg = d3.select("body")
 						.append("svg")
 						.attr("width", w)
-						.attr("height", h);
+						.attr("height", h)
+						.attr("class", "chart");
+
 			
 
 		var xScale = d3.scale.ordinal()
-						.domain(stacked[0].map(function(d) { return d.x; }))
-						.rangeRoundBands([0, w - padding]);
+						.domain(stacked[0].map(function(d) {return d.x}))
+						.rangeRoundBands([0, w - padding], barPadding, barOutPadding);
 					
 		var yScale = d3.scale.linear()
-						.domain([0, d3.max(stacked[stacked.length - 1], function(d) { return d.y0 + d.y})])
+						.domain([0, d3.max(stacked[stacked.length - 1], function(d) {return d.y0 + d.y})])
 						.range([h - padding, 0]);
 						
 		var zScale = d3.scale.category20();
@@ -104,7 +90,8 @@
 	
 		var yAxis = d3.svg.axis()
 						.scale(yScale)
-						.orient("left");						
+						.orient("left")
+						.tickFormat(d3.format(".1%"));
 		
 		svg.append("g")
 			.call(xAxis)
@@ -132,25 +119,21 @@
 			.append("rect")
             .attr("x", function(d) {return xScale(d.x)})
             .attr("y", function(d) {return yScale(d.y + d.y0)})
+			.attr("label", function(d) {return d.label})
             .attr("height", function(d) {return yScale(d.y0) - yScale(d.y + d.y0)})
             .attr("width", xScale.rangeBand())
 			.attr("class", "rect")
-			.on("mouseover", function(d){
-			
-				var x = parseFloat(d3.select(this).attr("x"));
-				var y = parseFloat(d3.select(this).attr("y")) + 10;
-				console.log("x:" + x + ", y" + y)
-				
-				var labels = svg.append("text")
-								.attr("id", "showLabel")
-								.attr("x", x)
-								.attr("y", y)
-								.text(zScale.domain().slice().reverse())
-								.attr("fill", "black")
-								.attr("transform", "translate(" + padding + ",0)");
-			})
-			.on("mouseout", function(){d3.select("#showLabel").remove()});
-			
+			.on("mouseover", function(d) {		
+				tip.transition()			
+					.style("opacity", .9);		
+				tip.html("<strong>" +d.label + "</strong>: " + d3.format("%")(d.y))	
+					.style("left", (d3.event.pageX) + "px")		
+					.style("top", (d3.event.pageY) + "px");	
+            })					
+			.on("mouseout", function(d) {		
+				tip.transition()			
+					.style("opacity", 0);	
+			});
 	
 		/**
 		var text = layer.selectAll("text")
@@ -164,8 +147,4 @@
 			.attr("class", "text_stacked");
 		**/
 
-
-			</script>
- 
-		</body>
-	</html> 
+}
