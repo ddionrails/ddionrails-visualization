@@ -1,0 +1,171 @@
+<!DOCTYPE HTML>
+	<html lang="de">
+		<head>
+			<title>Visualization</title>
+			<meta charset="utf-8">
+			
+			<!-- D3.js -->
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+			<script src="http://d3js.org/d3.v3.min.js"></script>
+			
+			<link rel="stylesheet" href="./style.css" />
+			
+		</head>
+
+		<body>
+	
+		
+			
+			<script>
+
+			var rawData = { 
+		  
+				"study":"soep-test",
+				"dataset":"test1",
+				"variable":"edu",
+				"label":"Hoechster Bildungsabschluss",
+				"uni":{
+					"frequencies":[12,123,321,214,100],
+					"values":[-1,1,2,3,4],
+					"missings":[true,false,false,false,false],
+					"labels":["no response","Hauptschule","Realschule","Gymnasium","University"],
+				},
+				"bi":{
+					"sex":{
+						"label":"Geschlecht",
+						"categories":{
+							"0":{
+								"label":"Mann",
+								"frequencies":[1, 2, 3, 4, 5],
+							},
+							"1":{
+								"label":"Frau",
+								"frequencies":[2, 3, 6, 8, 10],
+							}
+						},
+						"values":[-1,1,2,3,4],
+						"missings":[true,false,false,false,false],
+						"labels":["no response","Hauptschule","Realschule","Gymnasium","University"],
+					}
+				}
+			}
+			
+			var data  = [];
+			
+			for(i in rawData.bi.sex.categories){
+				id = rawData.bi.sex.categories[i].label;
+				freqs = rawData.bi.sex.categories[i].frequencies;
+				freqs.unshift(id);
+				data.push(freqs);
+			}
+			
+			labels = rawData.bi.sex.labels;
+            var mapped =labels.map(function(dat,i){
+                return data.map(function(d){
+                    return {x: d[0], y: d[i+1] };
+                })
+            });
+			
+			console.log(mapped);
+			
+            var stacked = d3.layout.stack()
+				.offset('expand')
+				.values(function() {return mapped});
+								   
+			console.log(stacked)
+
+			var w =600;
+			var h = 300;
+			padding = 100;
+			barPadding = 20;
+								
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+			
+
+		var xScale = d3.scale.ordinal()
+						.domain(stacked[0].map(function(d) { return d.x; }))
+						.rangeRoundBands([0, w - padding]);
+					
+		var yScale = d3.scale.linear()
+						.domain([0, d3.max(stacked[stacked.length - 1], function(d) { return d.y0 + d.y})])
+						.range([h - padding, 0]);
+						
+		var zScale = d3.scale.category20();
+							
+		
+		var xAxis = d3.svg.axis()
+						.scale(xScale)
+						.orient("bottom")
+
+						
+	
+		var yAxis = d3.svg.axis()
+						.scale(yScale)
+						.orient("left");						
+		
+		svg.append("g")
+			.call(xAxis)
+			.attr("class", "axis")
+			.attr("transform", "translate(" + padding + "," + (h-padding)+")");			
+			
+		svg.append("g")
+			.call(yAxis)
+			.attr("class", "axis")
+			.attr("transform", "translate(" + padding + ",0)");			
+		
+	
+         var layer = svg.selectAll("layer")
+            .data(stacked)
+            .enter()
+			.append("g")
+            .attr("class", "layer")
+            .style("fill", function(d, i) { return zScale(i)})
+			.attr("transform", "translate(" + padding + ",0)");			
+
+           
+        var rect = layer.selectAll("rect")
+            .data(function(d){return d})
+            .enter()
+			.append("rect")
+            .attr("x", function(d) {return xScale(d.x)})
+            .attr("y", function(d) {return yScale(d.y + d.y0)})
+            .attr("height", function(d) {return yScale(d.y0) - yScale(d.y + d.y0)})
+            .attr("width", xScale.rangeBand())
+			.attr("class", "rect")
+			.on("mouseover", function(d){
+			
+				var x = parseFloat(d3.select(this).attr("x"));
+				var y = parseFloat(d3.select(this).attr("y")) + 10;
+				console.log("x:" + x + ", y" + y)
+				
+				var labels = svg.append("text")
+								.attr("id", "showLabel")
+								.attr("x", x)
+								.attr("y", y)
+								.text(zScale.domain().slice().reverse())
+								.attr("fill", "black")
+								.attr("transform", "translate(" + padding + ",0)");
+			})
+			.on("mouseout", function(){d3.select("#showLabel").remove()});
+			
+	
+		/**
+		var text = layer.selectAll("text")
+			.data(function(d){return d})
+            .enter()
+			.append("text")
+			.attr("x", function(d) { return xScale(d.x)})
+			.attr("y", function(d) {return yScale(d.y/2 + d.y0)})
+			.text(function(d) {return d.y})
+			.attr("transform", "translate(" + padding + ",0)")
+			.attr("class", "text_stacked");
+		**/
+
+
+			</script>
+ 
+		</body>
+	</html> 
