@@ -14,8 +14,13 @@
     </head>
 	
     <body>
+	
+		<label><input type="checkbox" id="hideMissings"> HideMissings</label>
+
 		<div id="menu"></div>
 		<div id="chart"></div>
+		
+		
     
 		<script>
 		 
@@ -31,9 +36,11 @@
 			//var barWidth = (w - margin_left - margin_right)/4;
 			var barWidth = 40;
 			
-			topMenu = ["frequencies","age", "sex", "sample", "wave", "percentage"];
+			topMenu = ["frequencies","age", "sex", "sample", "wave", "percentage", "hide missings"];
 			sideMenu = ["absolute", "percentages", "missings", "weights"]
-				
+			
+			var hideMissings = false;
+			
 			var svg = d3.select("#menu")
 						.append("svg")
 						.attr("width", w)
@@ -111,6 +118,18 @@
 												break;
 							default:			console.log("Error.");
 					}});
+					
+				d3.select("#hideMissings")
+					.on("change", function(){
+						if(this.checked){
+							hideMissings = true;
+							cat_uni();
+						}
+						else{
+							hideMissings = false;
+							cat_uni();
+						}
+					});	
 			
 			cat_uni();
 

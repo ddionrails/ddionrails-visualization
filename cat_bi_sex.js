@@ -60,7 +60,8 @@ function cat_bi_sex(){
 			var w =600;
 			var h = 300;
 			padding = 100;
-			barPadding = 20;
+			barPadding = 0.2;
+			barOutPadding = 0.1;
 								
 			var svg = d3.select("#chart")
 						.append("svg")
@@ -71,7 +72,7 @@ function cat_bi_sex(){
 
 		var xScale = d3.scale.ordinal()
 						.domain(stacked[0].map(function(d) { return d.x; }))
-						.rangeRoundBands([0, w - padding]);
+						.rangeRoundBands([0, w - padding], barPadding, barOutPadding);
 					
 		var yScale = d3.scale.linear()
 						.domain([0, d3.max(stacked[stacked.length - 1], function(d) { return d.y0 + d.y})])

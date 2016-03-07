@@ -36,11 +36,20 @@ function cat_uni(){
 				}
 			}
 			
+
+			
+			
+			
 			data = [];
 			for(i = 0;  i < rawData.uni.frequencies.length; i++){
+				if(hideMissings == true && rawData.uni.missings[i]){
+					continue;
+				}
+				
 				tmp = [rawData.uni.labels[i], rawData.uni.frequencies[i]];
 				data.push(tmp);	
 			}
+			
 			
 
 			var w =600;
@@ -70,12 +79,16 @@ function cat_uni(){
 					
 
 		var xScale = d3.scale.linear()
-						.domain([0, d3.max(rawData.uni.frequencies)])
+						.domain([0, d3.max(data, function(d) {
+							return d3.max(d.filter(function(value) {
+							return typeof value === "number";
+							}));
+						})])
 						.range([0, w - padding]);
 						
 		// Y-Skala
 		var yScale = d3.scale.ordinal()
-						.domain(rawData.uni.labels)
+						.domain(data.map(function(d){return d[0]}))
 						.rangeRoundBands([h - padding, 0]);
 
 						
