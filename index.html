@@ -36,7 +36,7 @@
 			//var barWidth = (w - margin_left - margin_right)/4;
 			var barWidth = 40;
 			
-			topMenu = ["frequencies","age", "sex", "sample", "wave", "percentage", "hide missings"];
+			topMenu = ["frequencies","age", "sex", "sample", "wave", "percentage", "blah"];
 			sideMenu = ["absolute", "percentages", "missings", "weights"]
 			
 			var hideMissings = false;
@@ -97,8 +97,16 @@
 					.attr("class", "button");
 					
 
-
+			modes = {
 			
+				frequencies:	cat_uni,
+				sex:			cat_bi_sex,
+				percentage: 	cat_bi_perc,
+			
+			}
+			
+			
+			var current;
 			topMenu.append("text")
 					.attr("x", function(d, i){return xScale(i) + barWidth/2})
 					.attr("y", margin_top + barHeight*(2/3))
@@ -109,25 +117,19 @@
 					.attr("font-family", "sans-serif")
 					.attr("font-size", "12px")
 					.on("click", function(d){
-						switch(d){
-							case "frequencies": cat_uni();
-												break;
-							case "sex": 		cat_bi_sex();
-												break;
-							case "percentage":	cat_bi_perc();
-												break;
-							default:			console.log("Error.");
-					}});
+							current = d;
+							mode[current]();
+					});
 					
 				d3.select("#hideMissings")
 					.on("change", function(){
 						if(this.checked){
 							hideMissings = true;
-							cat_uni();
+							currentMode[mode]();
 						}
 						else{
 							hideMissings = false;
-							cat_uni();
+							mode[current]();
 						}
 					});	
 			

@@ -1,4 +1,4 @@
-function cat_bi_perc(){
+var cat_bi_perc = function cat_bi_perc(){
 	
 		d3.selectAll(".chart").remove();
 
@@ -37,14 +37,35 @@ function cat_bi_perc(){
 			
 			var data  = [];
 			
+			var indices = []
+				for(i = 0; i < rawData.bi.sex.missings.length; i++){
+					if(rawData.bi.sex.missings[i] == true){
+						indices.unshift(i);
+					}
+				}
+				
 			for(i in rawData.bi.sex.categories){
 				id = rawData.bi.sex.categories[i].label;
 				freqs = rawData.bi.sex.categories[i].frequencies;
+				
+				if(hideMissings == true){
+					for(i in indices){
+						freqs.splice(indices[i], 1);
+					}
+				}
+				
 				freqs.unshift(id);
 				data.push(freqs);
+				
 			}
-			
+		
 			labels = rawData.bi.sex.labels;
+			if(hideMissings == true){
+				for(i in indices){
+					labels.splice(indices[i], 1);
+				}
+			};
+			
             var mapped =labels.map(function(dat,i){
                 return data.map(function(d){
                     return {x: d[0], y: d[i+1], label: dat};

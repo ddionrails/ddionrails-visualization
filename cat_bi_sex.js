@@ -1,4 +1,4 @@
-function cat_bi_sex(){
+var cat_bi_sex = function cat_bi_sex(){
 	
 	d3.selectAll(".chart").remove();
 	
@@ -9,10 +9,10 @@ function cat_bi_sex(){
 				"variable":"edu",
 				"label":"Hoechster Bildungsabschluss",
 				"uni":{
-					"frequencies":[12,123,321,214,100],
-					"values":[-1,1,2,3,4],
-					"missings":[true,false,false,false,false],
-					"labels":["no response","Hauptschule","Realschule","Gymnasium","University"],
+					"frequencies":[20, 12,123,321,214,100],
+					"values":[-2,-1,1,2,3,4],
+					"missings":[true, true,false,false,false,false],
+					"labels":["-8", "no response","Hauptschule","Realschule","Gymnasium","University"],
 				},
 				"bi":{
 					"sex":{
@@ -20,30 +20,51 @@ function cat_bi_sex(){
 						"categories":{
 							"0":{
 								"label":"Mann",
-								"frequencies":[1, 2, 3, 4, 5],
+								"frequencies":[4, 1, 2, 3, 4, 5],
 							},
 							"1":{
 								"label":"Frau",
-								"frequencies":[2, 3, 6, 8, 10],
+								"frequencies":[4, 2, 3, 6, 8, 10],
 							}
 						},
-						"values":[-1,1,2,3,4],
-						"missings":[true,false,false,false,false],
-						"labels":["no response","Hauptschule","Realschule","Gymnasium","University"],
+						"values":[-2,-1,1,2,3,4],
+						"missings":[true, true,false,false,false,false],
+						"labels":["-8", "no response","Hauptschule","Realschule","Gymnasium","University"],
 					}
 				}
 			}
 			
 			var data  = [];
 			
+			var indices = []
+				for(i = 0; i < rawData.bi.sex.missings.length; i++){
+					if(rawData.bi.sex.missings[i] == true){
+						indices.unshift(i);
+					}
+				}
+				
 			for(i in rawData.bi.sex.categories){
 				id = rawData.bi.sex.categories[i].label;
 				freqs = rawData.bi.sex.categories[i].frequencies;
+				
+				if(hideMissings == true){
+					for(i in indices){
+						freqs.splice(indices[i], 1);
+					}
+				}
+				
 				freqs.unshift(id);
 				data.push(freqs);
+				
 			}
-			
+		
 			labels = rawData.bi.sex.labels;
+			if(hideMissings == true){
+				for(i in indices){
+					labels.splice(indices[i], 1);
+				}
+			};
+			
             var mapped =labels.map(function(dat,i){
                 return data.map(function(d){
                     return {x: d[0], y: d[i+1], label: dat};

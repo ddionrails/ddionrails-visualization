@@ -1,4 +1,4 @@
-function cat_uni(){
+var cat_uni = function cat_uni(){
 	
 			d3.selectAll(".chart").remove();
 			
