@@ -1,7 +1,8 @@
 var cat_bi_perc = function cat_bi_perc(){
 	
-		d3.selectAll(".chart").remove();
 
+		d3.selectAll(".chart").remove();
+		
 	
 			var rawData = { 
 		  
@@ -72,6 +73,7 @@ var cat_bi_perc = function cat_bi_perc(){
                 })
             });
 			
+	
             var stacked = d3.layout.stack().offset("expand")(mapped);
 								   
 			var tip = d3.select("body").append("tip")	

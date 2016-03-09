@@ -49,8 +49,7 @@ var cat_uni = function cat_uni(){
 				tmp = [rawData.uni.labels[i], rawData.uni.frequencies[i]];
 				data.push(tmp);	
 			}
-			
-			console.log(data.length)
+
 
 			var w =600;
 			var h = 100 + 20 * data.length;

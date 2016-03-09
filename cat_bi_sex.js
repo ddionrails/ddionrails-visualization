@@ -1,5 +1,6 @@
 var cat_bi_sex = function cat_bi_sex(){
 	
+	
 	d3.selectAll(".chart").remove();
 	
 	var rawData = { 
@@ -30,6 +31,30 @@ var cat_bi_sex = function cat_bi_sex(){
 						"values":[-2,-1,1,2,3,4],
 						"missings":[true, true,false,false,false,false],
 						"labels":["-8", "no response","Hauptschule","Realschule","Gymnasium","University"],
+					},
+					"wave":{
+						"label":"Welle",
+						"categories":{
+							"0":{
+								"label":"94",
+								"frequencies":[7, 99, 4, 4, 5, 8],
+							},
+							"1":{
+								"label":"95",
+								"frequencies":[4, 2, 3, 6, 8, 10],
+							},
+							"2":{
+								"label":"96",
+								"frequencies":[8, 90, 30, 65, 83, 10],
+							},
+							"3":{
+								"label":"97",
+								"frequencies":[55, 4, 3, 6, 5, 10],
+							}
+						},
+						"values":[-2,-1,1,2,3,4],
+						"missings":[true, true,false,false,false,false],
+						"labels":["-8", "no response","Hauptschule","Realschule","Gymnasium","University"],
 					}
 				}
 			}
@@ -37,15 +62,15 @@ var cat_bi_sex = function cat_bi_sex(){
 			var data  = [];
 			
 			var indices = []
-				for(i = 0; i < rawData.bi.sex.missings.length; i++){
-					if(rawData.bi.sex.missings[i] == true){
+				for(i = 0; i < rawData.bi[current].missings.length; i++){
+					if(rawData.bi[current].missings[i] == true){
 						indices.unshift(i);
 					}
 				}
 				
-			for(i in rawData.bi.sex.categories){
-				id = rawData.bi.sex.categories[i].label;
-				freqs = rawData.bi.sex.categories[i].frequencies;
+			for(i in rawData.bi[current].categories){
+				id = rawData.bi[current].categories[i].label;
+				freqs = rawData.bi[current].categories[i].frequencies;
 				
 				if(hideMissings == true){
 					for(i in indices){
@@ -58,7 +83,7 @@ var cat_bi_sex = function cat_bi_sex(){
 				
 			}
 		
-			labels = rawData.bi.sex.labels;
+			labels = rawData.bi[current].labels;
 			if(hideMissings == true){
 				for(i in indices){
 					labels.splice(indices[i], 1);
@@ -100,8 +125,8 @@ var cat_bi_sex = function cat_bi_sex(){
 						.range([h - padding, 0]);
 						
 		var zScale = d3.scale.category20();
-							
-		
+	
+
 		var xAxis = d3.svg.axis()
 						.scale(xScale)
 						.orient("bottom")
@@ -152,17 +177,5 @@ var cat_bi_sex = function cat_bi_sex(){
 				tip.transition()			
 					.style("opacity", 0);	
 			});
-			
-	
-		/**
-		var text = layer.selectAll("text")
-			.data(function(d){return d})
-            .enter()
-			.append("text")
-			.attr("x", function(d) { return xScale(d.x)})
-			.attr("y", function(d) {return yScale(d.y/2 + d.y0)})
-			.text(function(d) {return d.y})
-			.attr("transform", "translate(" + padding + ",0)")
-			.attr("class", "text_stacked");
-		**/
+		
 }
