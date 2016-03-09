@@ -98,7 +98,7 @@ var cat_bi_perc = function cat_bi_perc(){
 					
 		var yScale = d3.scale.linear()
 						.domain([0, d3.max(stacked[stacked.length - 1], function(d) {return d.y0 + d.y})])
-						.range([h - padding, 0]);
+						.range([h -padding, 0]);
 						
 		var zScale = d3.scale.category20();
 							
