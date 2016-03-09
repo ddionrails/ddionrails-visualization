@@ -15,9 +15,9 @@
 	
     <body>
 	
-		<label><input type="checkbox" id="hideMissings"> HideMissings</label>
 
-		<div id="menu"></div>
+		<div id="topMenu"></div>
+		<div id="sideMenu"></div>
 		<div id="chart"></div>
 		
 		
@@ -25,7 +25,7 @@
 		<script>
 		 
 			var w =600;
-			var h = 100;
+			var h = 50;
 
 			var margin_left = 70;
 			var margin_right = 20;
@@ -36,12 +36,12 @@
 			//var barWidth = (w - margin_left - margin_right)/4;
 			var barWidth = 40;
 			
-			topMenu = ["frequencies","age", "sex", "sample", "wave", "percentage", "blah"];
-			sideMenu = ["absolute", "percentages", "missings", "weights"]
+			topMenu = ["frequencies","age", "sex", "sample", "wave"];
+			sideMenu = ["absolute", "percentage", "missings", "weights"]
 			
 			var hideMissings = false;
 			
-			var svg = d3.select("#menu")
+			var svg = d3.select("#topMenu")
 						.append("svg")
 						.attr("width", w)
 						.attr("height", h);
@@ -49,6 +49,15 @@
 			var xScale = d3.scale.ordinal()
 						.domain(topMenu)
 						.rangeBands([0, w - margin_left - margin_right]);
+						
+			var xScale2 = d3.scale.ordinal()
+						.domain(sideMenu)
+						.rangeBands([0, w - margin_left - margin_right]);
+						
+			var svg2 = d3.select("#sideMenu")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);	
 						
 			var yScale = d3.scale.ordinal()
 							.domain(sideMenu)
@@ -88,25 +97,26 @@
 							.append("g")
 							.attr("transform", "translate(" + margin_left + "," + margin_top+")");			
 			
+			
+				
 			topMenu.append("rect")
 					.attr("x", function(d, i){return xScale(i)})
 					.attr("y", 10)
 					.attr("height", barHeight)
 					.attr("width", barWidth)
 					.attr("fill", "none")
-					.attr("class", "button");
+					.attr("class", "button")
+					.on("click", function(){
+						console.log("Hier")
+						console.log(d3.select(this))
+							//.attr("fill", "red");
+			});
 					
+				
 
-			modes = {
+			var current = "frequencies";
+			var active = false;
 			
-				frequencies:	cat_uni,
-				sex:			cat_bi_sex,
-				percentage: 	cat_bi_perc,
-			
-			}
-			
-			
-			var current;
 			topMenu.append("text")
 					.attr("x", function(d, i){return xScale(i) + barWidth/2})
 					.attr("y", margin_top + barHeight*(2/3))
@@ -117,24 +127,81 @@
 					.attr("font-family", "sans-serif")
 					.attr("font-size", "12px")
 					.on("click", function(d){
+							
+							if(active == false){
+								d3.select(this).style("fill", "steelblue");
+								active = true;
+							}
+							else{
+								d3.select(this).style("fill", "grey");
+								active = false;
+							}
+							
 							current = d;
-							mode[current]();
+							modes[current]();
 					});
 					
-				d3.select("#hideMissings")
-					.on("change", function(){
-						if(this.checked){
-							hideMissings = true;
-							currentMode[mode]();
-						}
-						else{
-							hideMissings = false;
-							mode[current]();
-						}
-					});	
-			
 			cat_uni();
 
+					
+			var sideMenu = svg2.selectAll("g")
+							.data(sideMenu)
+							.enter()
+							.append("g")
+							.attr("transform", "translate(" + margin_left + "," + margin_top+")");			
+			
+			sideMenu.append("rect")
+					.attr("x", function(d, i){return xScale2(i)})
+					.attr("y", 20)
+					.attr("height", barHeight)
+					.attr("width", barWidth)
+					.attr("fill", "white")
+					.attr("class", "button");
+					
+			var missingx = function(){
+				hideMissings ^= true;
+			}		
+
+			modes = {
+			
+				frequencies:	cat_uni,
+				sex:			cat_bi_sex,
+				percentage: 	cat_bi_perc,
+				missings:		missingx,
+				
+			}
+					
+			var currentx;
+			sideMenu.append("text")
+					.attr("x", function(d, i){return xScale2(i) + barWidth/2})
+					.attr("y", margin_top + barHeight*(2/3))
+					.text(function(d){ return d})
+					.attr("text-anchor", "center")
+					.attr("font-weight", "bold")
+					.attr("fill", "grey")
+					.attr("font-family", "sans-serif")
+					.attr("font-size", "12px")
+					.on("click", function(d){
+					
+							if(active == false){
+								d3.select(this).style("fill", "steelblue");
+								active = true;
+							}
+							else{
+								d3.select(this).style("fill", "grey");
+								active = false;
+							}
+							
+							currentx = d;
+							console.log(currentx)
+							modes[currentx]();
+							console.log(current)
+							modes[current]();
+					});
+					
+			
+			
+		
 			
 			
 							
