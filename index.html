@@ -6,208 +6,181 @@
 		<!-- D3.js -->
 		<script src="http://d3js.org/d3.v2.js"></script>   
 		
+		<script src="./chart.js"></script>
 		<script src="./cat_uni.js"></script>	
-		<script src="./cat_bi_sex.js"></script>	
-		<script src="./cat_bi_perc.js"></script>	
 		<link rel="stylesheet" href="./style.css" />
                 
     </head>
 	
     <body>
 	
-		<div id="topMenu"></div>
+		<div id="menu"></div>
 		<div id="chart"></div>
 		
 
 		<script>
-		
-		 
 			
-			var h = 41;
-			var barHeight = 15;
+			//console.log(returnVarName())
+		
+			// Menu
+			var hSvg = 41;
+			var textHeight = 15;
 			var w =422.75;
 			
+			cat_uni();
 			
-			topMenu = ["age", "sex", "sample", "wave"];
-			sideMenu = ["percent", "missings", "weights"]
+			menu_c = ["age", "sex", "sample", "wave"];
+			menu_o = ["percent", "missings", "weights"]
 			
-			var barWidth = (w/topMenu.length) - 20;
+			var barWidth = (w/menu_c.length) - 20;
 			
 
-			
-			var svg3 = d3.select("#topMenu")
+			var menu_h_svg = d3.select("#menu")
 						.append("svg")
 						.attr("width", 100)
-						.attr("height", h)
+						.attr("height", hSvg)
 						.on("click", cat_uni());
 			
-			var svg = d3.select("#topMenu")
+			var menu_c_svg = d3.select("#menu")
 						.append("svg")
 						.attr("width", 250)
-						.attr("height", h);
+						.attr("height", hSvg);
 						
-			var xScale = d3.scale.ordinal()
-						.domain(topMenu)
+			var menu_o_svg = d3.select("#menu")
+						.append("svg")
+						.attr("width", 250)
+						.attr("height", hSvg);
+						
+						
+			var menu_c_scale = d3.scale.ordinal()
+						.domain(menu_c)
 						.rangeBands([10, 250]);
 						
-			var xScale2 = d3.scale.ordinal()
-						.domain(sideMenu)
+			var menu_o_scale = d3.scale.ordinal()
+						.domain(menu_o)
 						.rangeBands([65, 250]);
-						
-			var svg2 = d3.select("#topMenu")
-						.append("svg")
-						.attr("width", 250)
-						.attr("height", 41);
-		
-			var hideMissings = false;	
 			
-			var missingx = function(){
-				hideMissings = true;
-				modes[current]();
-
-			}		
-
-			modes = {
+			var menu_c_active = "frequencies";			
+			menu_h_svg.append("text")
+						.text("Education")
+						.attr("x", 10)
+						.attr("y", 10 + textHeight*2/3)
+						.attr("class", "var-name")
+						.attr("text-anchor", "right")
+						.on("click", function(){
+							d3.selectAll(".menu_circles").attr("fill", "white").attr("stroke", "steelblue");
+							d3.selectAll(".menu_rects").attr("fill", "white").attr("stroke", "grey");
+							cat_uni()
+						});
 			
-				"frequencies":	cat_uni,
-				"sex":			cat_bi_sex,
-				"wave":			cat_bi_sex,
-				"percent":		cat_bi_perc,
-				"missings":		missingx,
-				
+			var circle_filled = false;
+			
+			var options = {
+				"missings": 	false,
+				"percent":		false,
+				"weights":		false,
 			}
-					
-			var active2 = false;
 			
-			var topMenu = svg.selectAll("g")
-							.data(topMenu)
+			var menu_c = menu_c_svg.selectAll("g")
+							.data(menu_c)
 							.enter()
 							.append("g")
 							.on("click", function(d){
 								
-								current = d;								
-								modes[current]();
+								menu_c_active = d;
 								
-								if(active2 == false){
-								d3.selectAll("circle").attr("fill", "white").attr("stroke", "grey")
-								d3.select(this).select("circle").attr("fill", "steelblue").attr("stroke", "steelblue")
-								active2 = true;
+								try{
+									organizeData(options, menu_c_active);
+									drawChart();
+								}
+								catch(error){
+									d3.select(".chart").remove();
+									d3.select("#chart").append("p").text("Not available.").attr("class", "chart");
+								}
+								
+								
+								if(circle_filled == false){
+									d3.selectAll("circle").attr("fill", "white").attr("stroke", "grey")
+									d3.select(this).select("circle").attr("fill", "steelblue").attr("stroke", "steelblue")
+									circle_filled = true;
 								}
 								else{
 									d3.selectAll("circle").attr("fill", "white").attr("stroke", "grey")
-									d3.select(this).select("circle").attr("fill", "white").attr("stroke", "grey")
-									active2 = false;
+									d3.select(this).select("circle").attr("fill", "steelblue").attr("stroke", "steelblue")
+									circle_filled = false;
+									//cat_uni();
 								}	
-							});		
-							
-			var active = false;
-			var clicked = false;
-			var sideMenu = svg2.selectAll("g")
-							.data(sideMenu)
-							.enter()
-							.append("g")
-							.on("click", function(d){
-							
-								if(clicked == false){
-									currentx = d;
-									modes[currentx]();
-									clicked = true;
-								}
-								else{
-									if(currentx == "missings"){
-										hideMissings = false;
-									}
-									modes[current]();
-									clicked = false;
-								}
-								
-									
-								if(active == false){
-								d3.select(this).select("rect").attr("fill", "steelblue")
-								active = true;
-								}
-								else{
-									d3.select(this).select("rect").attr("fill", "white")
-									active = false;
-								}	
-							});		
-
-			svg3.append("text")
-				.text("Education")
-				.attr("x", 10)
-				.attr("y", 10 + barHeight*2/3)
-				.attr("class", "var-name")
-				.attr("text-anchor", "right")
-				.on("click", cat_uni);
-				
+							});	
 			
-			
-			
-			
-
-			topMenu.append("circle")
-					.attr("cx", function(d, i){return xScale(i)})
+			menu_c.append("circle")
+					.attr("cx", function(d, i){return menu_c_scale(i)})
 					.attr("cy", 16)
 					.attr("r", 5)
-					//.attr("height", barHeight)
-					//.attr("width", barWidth)
 					.attr("fill", "white")
 					.attr("stroke", "grey")
 					.attr("stroke-width", 1)
-					.attr("class", "button");
+					.attr("class", "menu_circles");
 					
-				
-			sideMenu.append("rect")
-					.attr("x", function(d, i){return xScale2(i)})
+			menu_c.append("text")
+					.attr("x", function(d, i){return menu_c_scale(i) + 10})
+					.attr("y", 10 + textHeight*2/3)
+					.text(function(d){ return d})
+					.attr("text-anchor", "left")
+					.attr("font-weight", "")
+					.attr("fill", "grey")
+					.attr("font-family", "sans-serif")
+					.attr("font-size", "11px");		
+		
+					
+	
+			
+			
+			
+			var menu_o = menu_o_svg.selectAll("g")
+							.data(menu_o)
+							.enter()
+							.append("g")
+							.on("click", function(d){
+								
+								if(options[d] == false){
+									options[d] = true;
+									organizeData(options, menu_c_active);
+									drawChart();
+									d3.select(this).select("rect").attr("fill", "steelblue")
+									
+								}
+								else{
+									options[d] = false;
+									organizeData(options, menu_c_active);
+									drawChart();
+									d3.select(this).select("rect").attr("fill", "white")
+								}
+						
+							});		
+					
+
+			menu_o.append("rect")
+					.attr("x", function(d, i){return menu_o_scale(i)})
 					.attr("y", 12)
 					.attr("height", 9)
 					.attr("width", 9)
-					//.attr("height", barHeight)
-					//.attr("width", barWidth)
 					.attr("fill", "white")
 					.attr("stroke", "steelblue")
 					.attr("stroke-width", 1)
-					.attr("class", "button");
-					
-					
-		;		
-			var current = "frequencies";
-			topMenu.append("text")
-					.attr("x", function(d, i){return xScale(i) + 10})
-					.attr("y", 10 + barHeight*2/3)
+					.attr("class", "menu_rects");	
+
+			var textHeight = 15;			
+			var menu_o_active;
+			menu_o.append("text")
+					.attr("x", function(d, i){return menu_o_scale(i) + 14})
+					.attr("y", 10 + textHeight*2/3)
 					.text(function(d){ return d})
 					.attr("text-anchor", "left")
 					.attr("font-weight", "")
 					.attr("fill", "grey")
 					.attr("font-family", "sans-serif")
 					.attr("font-size", "11px");
-					
-					
-			cat_uni();				
 		
-			var barHeight = 15;			
-			var currentx;
-			sideMenu.append("text")
-					.attr("x", function(d, i){return xScale2(i) + 14})
-					.attr("y", 10 + barHeight*2/3)
-					.text(function(d){ return d})
-					.attr("text-anchor", "left")
-					.attr("font-weight", "")
-					.attr("fill", "grey")
-					.attr("font-family", "sans-serif")
-					.attr("font-size", "11px");
-			
-			
-					
-			
-			
-		
-			
-			
-							
-			
-							
-						
 			
 						
 		</script>

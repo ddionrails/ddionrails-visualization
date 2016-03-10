@@ -1,9 +1,9 @@
-var cat_bi_sex = function cat_bi_sex(){
+var stacked;
+var hideMissings;					
+
+function organizeData(options, menu_c_active){
 	
-	
-	d3.selectAll(".chart").remove();
-	
-	var rawData = { 
+		var rawData = { 
 		  
 				"study":"soep-test",
 				"dataset":"test1",
@@ -22,10 +22,12 @@ var cat_bi_sex = function cat_bi_sex(){
 							"0":{
 								"label":"Mann",
 								"frequencies":[4, 1, 2, 3, 4, 5],
+								"weighted":	  [9, 90, 3, 4, 5, 6],
 							},
 							"1":{
 								"label":"Frau",
 								"frequencies":[4, 2, 3, 6, 8, 10],
+								"weighted":	  [9, 90, 3, 4, 5, 6],
 							}
 						},
 						"values":[-2,-1,1,2,3,4],
@@ -38,18 +40,22 @@ var cat_bi_sex = function cat_bi_sex(){
 							"0":{
 								"label":"94",
 								"frequencies":[7, 99, 4, 4, 5, 8],
+								"weighted":	  [9, 90, 3, 4, 5, 6],
 							},
 							"1":{
 								"label":"95",
 								"frequencies":[4, 2, 3, 6, 8, 10],
+								"weighted":	  [9, 90, 3, 4, 5, 6],
 							},
 							"2":{
 								"label":"96",
 								"frequencies":[8, 90, 30, 65, 83, 10],
+								"weighted":	  [9, 90, 3, 4, 5, 6],
 							},
 							"3":{
 								"label":"97",
 								"frequencies":[55, 4, 3, 6, 5, 10],
+								"weighted":	  [9, 90, 3, 4, 5, 6],
 							}
 						},
 						"values":[-2,-1,1,2,3,4],
@@ -58,32 +64,55 @@ var cat_bi_sex = function cat_bi_sex(){
 					}
 				}
 			}
-			
-			var data  = [];
-			
-			var indices = []
-				for(i = 0; i < rawData.bi[current].missings.length; i++){
-					if(rawData.bi[current].missings[i] == true){
-						indices.unshift(i);
-					}
-				}
-				
-			for(i in rawData.bi[current].categories){
-				id = rawData.bi[current].categories[i].label;
-				freqs = rawData.bi[current].categories[i].frequencies;
-				
-				if(hideMissings == true){
-					for(i in indices){
-						freqs.splice(indices[i], 1);
-					}
-				}
-				
-				freqs.unshift(id);
-				data.push(freqs);
-				
-			}
+
+     
+	if(options.missings == true){
+		hideMissings = true
+	}
+	else{
+		hideMissings = false
+	}
+	
+	if(options.percent == true){
+		offset = "expand";
+	}
+	else{
+		offset = "";
+	}
+	if(options.weights == true){
+		dataType = "weighted"
+	}
+	else{
+		dataType = "frequencies"
+	}
 		
-			labels = rawData.bi[current].labels;
+	var data  = [];
+	var indices = []
+	for(i = 0; i < rawData.bi[menu_c_active].missings.length; i++){
+		if(rawData.bi[menu_c_active].missings[i] == true){
+			indices.unshift(i);
+		}
+	}
+				
+	for(i in rawData.bi[menu_c_active].categories){
+		id = rawData.bi[menu_c_active].categories[i].label;
+				
+		// Gewichtet oder nicht
+		freqs = rawData.bi[menu_c_active].categories[i][dataType];
+			
+		// Missings oder nicht
+		if(hideMissings == true){
+			for(i in indices){
+				freqs.splice(indices[i], 1);
+			}
+		}
+				
+		freqs.unshift(id);
+		data.push(freqs);
+				
+	}
+		
+	labels = rawData.bi[menu_c_active].labels;
 			if(hideMissings == true){
 				for(i in indices){
 					labels.splice(indices[i], 1);
@@ -96,10 +125,15 @@ var cat_bi_sex = function cat_bi_sex(){
                 })
             });
 			
-			
-			var stacked = d3.layout.stack()(mapped);
+			// normalized or not
+			stacked = d3.layout.stack().offset(offset)(mapped);
+	}	
+
+function drawChart(){
 	
-			var tip = d3.select("body").append("tip")	
+	d3.selectAll(".chart").remove();
+	
+	var tip = d3.select("body").append("tip")	
 						.attr("class", "tooltip")				
 						.style("opacity", 0);
 
@@ -141,11 +175,11 @@ var cat_bi_sex = function cat_bi_sex(){
 			.call(xAxis)
 			.attr("class", "axis")
 			.attr("transform", "translate(" + padding + "," + (h-padding)+")");			
-			
+	
 		svg.append("g")
 			.call(yAxis)
 			.attr("class", "axis")
-			.attr("transform", "translate(" + padding + ",0)");			
+			.attr("transform", "translate(" + padding + ",0)");		
 		
 	
          var layer = svg.selectAll("layer")
@@ -178,4 +212,7 @@ var cat_bi_sex = function cat_bi_sex(){
 					.style("opacity", 0);	
 			});
 		
-}
+}	
+
+
+
