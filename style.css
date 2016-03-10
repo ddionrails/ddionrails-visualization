@@ -1,0 +1,62 @@
+.rects {
+  fill: steelblue;
+  hover: grey;
+}
+
+.text {
+  fill: white;
+  font-size: 11px;
+  font-family: sans-serif;
+  text-anchor: end;
+}
+
+.text_stacked {
+  fill: white;
+  font-size: 11px;
+  font-family: sans-serif;
+  text-anchor: middle;
+	
+}
+.axis path,
+.axis line {
+	fill: none;
+	stroke: grey;
+	shape-rendering: crispEdge;
+}
+			
+.axis text {
+	font-family: sans-serif;
+	font-size: 11px;
+	fill: grey;
+}
+
+.svg {
+  border: solid 1px #ccc;
+  font: 10px sans-serif;
+  shape-rendering: crispEdges;
+}
+
+tip.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 100px;					
+    height: 20px;					
+    padding: 2px;				
+    font-family: sans-serif;
+	font-size: 11px;
+    background: white;		
+    border-radius: 8px;			
+}
+
+#topMenu{
+	
+	padding-bottom: 20px;
+}
+
+.var-name{
+	
+	font-size: 11 px;
+	font-weight: bold;
+	font-family: sans-serif;
+}
+

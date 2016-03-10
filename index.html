@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Visualization</title>
+		
+		<!-- D3.js -->
+		<script src="http://d3js.org/d3.v2.js"></script>   
+		
+		<script src="./cat_uni.js"></script>	
+		<script src="./cat_bi_sex.js"></script>	
+		<script src="./cat_bi_perc.js"></script>	
+		<link rel="stylesheet" href="./style.css" />
+                
+    </head>
+	
+    <body>
+	
+		<div id="topMenu"></div>
+		<div id="chart"></div>
+		
+
+		<script>
+		
+		 
+			
+			var h = 41;
+			var barHeight = 15;
+			var w =422.75;
+			
+			
+			topMenu = ["age", "sex", "sample", "wave"];
+			sideMenu = ["percent", "missings", "weights"]
+			
+			var barWidth = (w/topMenu.length) - 20;
+			
+
+			
+			var svg3 = d3.select("#topMenu")
+						.append("svg")
+						.attr("width", 100)
+						.attr("height", h)
+						.on("click", cat_uni());
+			
+			var svg = d3.select("#topMenu")
+						.append("svg")
+						.attr("width", 250)
+						.attr("height", h);
+						
+			var xScale = d3.scale.ordinal()
+						.domain(topMenu)
+						.rangeBands([10, 250]);
+						
+			var xScale2 = d3.scale.ordinal()
+						.domain(sideMenu)
+						.rangeBands([65, 250]);
+						
+			var svg2 = d3.select("#topMenu")
+						.append("svg")
+						.attr("width", 250)
+						.attr("height", 41);
+		
+			var hideMissings = false;	
+			
+			var missingx = function(){
+				hideMissings = true;
+				modes[current]();
+
+			}		
+
+			modes = {
+			
+				"frequencies":	cat_uni,
+				"sex":			cat_bi_sex,
+				"wave":			cat_bi_sex,
+				"percent":		cat_bi_perc,
+				"missings":		missingx,
+				
+			}
+					
+			var active2 = false;
+			
+			var topMenu = svg.selectAll("g")
+							.data(topMenu)
+							.enter()
+							.append("g")
+							.on("click", function(d){
+								
+								current = d;								
+								modes[current]();
+								
+								if(active2 == false){
+								d3.selectAll("circle").attr("fill", "white").attr("stroke", "grey")
+								d3.select(this).select("circle").attr("fill", "steelblue").attr("stroke", "steelblue")
+								active2 = true;
+								}
+								else{
+									d3.selectAll("circle").attr("fill", "white").attr("stroke", "grey")
+									d3.select(this).select("circle").attr("fill", "white").attr("stroke", "grey")
+									active2 = false;
+								}	
+							});		
+							
+			var active = false;
+			var clicked = false;
+			var sideMenu = svg2.selectAll("g")
+							.data(sideMenu)
+							.enter()
+							.append("g")
+							.on("click", function(d){
+							
+								if(clicked == false){
+									currentx = d;
+									modes[currentx]();
+									clicked = true;
+								}
+								else{
+									if(currentx == "missings"){
+										hideMissings = false;
+									}
+									modes[current]();
+									clicked = false;
+								}
+								
+									
+								if(active == false){
+								d3.select(this).select("rect").attr("fill", "steelblue")
+								active = true;
+								}
+								else{
+									d3.select(this).select("rect").attr("fill", "white")
+									active = false;
+								}	
+							});		
+
+			svg3.append("text")
+				.text("Education")
+				.attr("x", 10)
+				.attr("y", 10 + barHeight*2/3)
+				.attr("class", "var-name")
+				.attr("text-anchor", "right")
+				.on("click", cat_uni);
+				
+			
+			
+			
+			
+
+			topMenu.append("circle")
+					.attr("cx", function(d, i){return xScale(i)})
+					.attr("cy", 16)
+					.attr("r", 5)
+					//.attr("height", barHeight)
+					//.attr("width", barWidth)
+					.attr("fill", "white")
+					.attr("stroke", "grey")
+					.attr("stroke-width", 1)
+					.attr("class", "button");
+					
+				
+			sideMenu.append("rect")
+					.attr("x", function(d, i){return xScale2(i)})
+					.attr("y", 12)
+					.attr("height", 9)
+					.attr("width", 9)
+					//.attr("height", barHeight)
+					//.attr("width", barWidth)
+					.attr("fill", "white")
+					.attr("stroke", "steelblue")
+					.attr("stroke-width", 1)
+					.attr("class", "button");
+					
+					
+		;		
+			var current = "frequencies";
+			topMenu.append("text")
+					.attr("x", function(d, i){return xScale(i) + 10})
+					.attr("y", 10 + barHeight*2/3)
+					.text(function(d){ return d})
+					.attr("text-anchor", "left")
+					.attr("font-weight", "")
+					.attr("fill", "grey")
+					.attr("font-family", "sans-serif")
+					.attr("font-size", "11px");
+					
+					
+			cat_uni();				
+		
+			var barHeight = 15;			
+			var currentx;
+			sideMenu.append("text")
+					.attr("x", function(d, i){return xScale2(i) + 14})
+					.attr("y", 10 + barHeight*2/3)
+					.text(function(d){ return d})
+					.attr("text-anchor", "left")
+					.attr("font-weight", "")
+					.attr("fill", "grey")
+					.attr("font-family", "sans-serif")
+					.attr("font-size", "11px");
+			
+			
+					
+			
+			
+		
+			
+			
+							
+			
+							
+						
+			
+						
+		</script>
+		</body>
+</html>
