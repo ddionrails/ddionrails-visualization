@@ -3,6 +3,7 @@
     "dataset":"test1",
     "variable":"edu",
     "label":"Hoechster Bildungsabschluss",
+    "scale":"cat",
     "uni":{
         "frequencies":[12,123,321,214,100],
         "weighted":[14,121,221,314,100],
