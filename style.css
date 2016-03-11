@@ -67,3 +67,15 @@ tip.tooltip {
 	
 }
 
+path { 
+    stroke: steelblue;
+    stroke-width: 2;
+    fill: none;
+}
+
+.text_line_points {
+  fill: grey;
+  font-size: 11px;
+  font-family: sans-serif;
+}
+

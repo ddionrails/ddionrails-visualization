@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Visualization</title>
+		
+		<!-- D3.js -->
+		<script src="http://d3js.org/d3.v2.js"></script>   
+		
+		<script src="./chart.js"></script>
+		<script src="./cat_uni.js"></script>	
+		<script src="./testdata/age.json"></script>	
+		<link rel="stylesheet" href="./style.css" />
+                
+    </head>
+	
+    <body>
+	
+		<div id="menu"></div>
+		<div id="chart"></div>
+		
+
+		<script>
+
+		
+		var margin_right = 50;
+		var margin_top = 50;
+		var margin_left = 50;
+		var margin_bottom = 50;
+		var w =600;
+		var h = 300;
+		var padding = 100;
+		
+	
+								
+		var svg = d3.select("#chart")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h)
+						.attr("class", "chart");
+			
+
+		var datax = rawData.uni.density;
+		
+		var xScale = d3.scale.ordinal()
+						.domain(d3.range(rawData.uni.min, rawData.uni.max + 1, rawData.uni.by))
+						.rangeRoundBands([0, w-margin_right-margin_left]);
+					
+		var yScale = d3.scale.linear()
+						.domain([0, d3.max(rawData.uni.density)])
+						.range([h-margin_top-margin_bottom, 0]);
+						
+		var xAxis = d3.svg.axis()
+						.scale(xScale)
+						.orient("bottom")
+
+		var yAxis = d3.svg.axis()
+						.scale(yScale)
+						.orient("left");						
+		
+		svg.append("g")
+			.call(xAxis)
+			.attr("class", "axis")
+			.attr("transform", "translate(" + margin_left + "," + (h-margin_top-margin_bottom) +")");			
+	
+		svg.append("g")
+			.call(yAxis)
+			.attr("class", "axis")
+			.attr("transform", "translate(" + margin_left + ",0)");	
+		
+		var line = d3.svg.line()
+					 .x(function(d) {return xScale(d)})
+					 .y(function (d) {return yScale(d)})
+					 .interpolate("cardinal");
+					 
+		svg.append("path")
+			.attr("class", "line")
+			.attr("d", line(datax))
+			.attr("transform", "translate(" + padding + ",0)");	
+		
+		
+		var point = svg.append("g")
+					.attr("class", "line-point")
+					.attr("transform", "translate(" + padding + ",0)");	
+					
+
+		point.selectAll('circle')
+			.data(datax)
+			.enter()
+			.append('circle')
+			.attr("cx", function(d) {
+				return xScale(d);
+			})
+			.attr("cy", function(d) { return yScale(d) })
+			.attr("r", 3)
+			.style("fill", "steelblue");
+
+		var val = svg.append('g')
+			.attr('class','text_line_points')
+			.attr("transform", "translate(" + padding + ",0)");
+
+        val.selectAll('text')
+			.data(datax)
+			.enter()
+			.append('text')
+			.attr("x", function(d) {
+				return xScale(d)})
+			.attr("y", function(d) { return yScale(d) })
+			.attr('dy', -10)
+			.attr("text-anchor", "middle")
+			.text(function(d) { return d})
+		
+		/**
+		rects = svg.selectAll("rect")
+					.data(datax)
+					.enter()
+					.append("rect");
+						
+		rects.attr("x", function(d, i){return xScale(i * 20)})
+			.attr("y", function (d) {return yScale(h-d)})
+			.attr("height", function (d) {return yScale(d)})
+			.attr("width", function(d) {return ((w-margin)/rawData.uni.density.length)-10})
+			.attr("transform", "translate(" + padding + ",0)");	
+		**/
+		
+		
+
+		</script>
+	</body>
+</html>
