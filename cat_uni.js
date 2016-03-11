@@ -1,6 +1,6 @@
-var cat_uni = function cat_uni(){
-	
-			d3.selectAll(".chart").remove();
+ function cat_uni(options){
+
+	d3.selectAll(".chart").remove();
 			
 			//var rawData = d3.json("./testdata/edu.json");
 
@@ -11,10 +11,11 @@ var cat_uni = function cat_uni(){
 				"variable":"edu",
 				"label":"Hoechster Bildungsabschluss",
 				"uni":{
-					"frequencies":[12,123,321,214,100],
-					"values":[-1,1,2,3,4],
-					"missings":[true,false,false,false,false],
-					"labels":["no response","Hauptschule","Realschule","Gymnasium","University"],
+					"frequencies":[20, 12,123,321,214,100],
+					"weighted":	  [9, 90, 3, 4, 5, 6],
+					"values":[-2,-1,1,2,3,4],
+					"missings":[true, true,false,false,false,false],
+					"labels":["-8", "no response","Hauptschule","Realschule","Gymnasium","University"],
 				},
 				"bi":{
 					"sex":{
@@ -22,31 +23,74 @@ var cat_uni = function cat_uni(){
 						"categories":{
 							"0":{
 								"label":"Mann",
-								"frequencies":[7,123,321,214,100],
+								"frequencies":[4, 1, 2, 3, 4, 5],
+								"weighted":	  [9, 90, 3, 4, 5, 6],
 							},
 							"1":{
 								"label":"Frau",
-								"frequencies":[12,123,321,214,100],
+								"frequencies":[4, 2, 3, 6, 8, 10],
+								"weighted":	  [9, 90, 3, 4, 5, 6],
 							}
 						},
-						"values":[-1,1,2,3,4],
-						"missings":[true,false,false,false,false],
-						"labels":["no response","Hauptschule","Realschule","Gymnasium","University"],
+						"values":[-2,-1,1,2,3,4],
+						"missings":[true, true,false,false,false,false],
+						"labels":["-8", "no response","Hauptschule","Realschule","Gymnasium","University"],
+					},
+					"wave":{
+						"label":"Welle",
+						"categories":{
+							"0":{
+								"label":"94",
+								"frequencies":[7, 99, 4, 4, 5, 8],
+								"weighted":	  [9, 90, 3, 4, 5, 6],
+							},
+							"1":{
+								"label":"95",
+								"frequencies":[4, 2, 3, 6, 8, 10],
+								"weighted":	  [9, 90, 3, 4, 5, 6],
+							},
+							"2":{
+								"label":"96",
+								"frequencies":[8, 90, 30, 65, 83, 10],
+								"weighted":	  [9, 90, 3, 4, 5, 6],
+							},
+							"3":{
+								"label":"97",
+								"frequencies":[55, 4, 3, 6, 5, 10],
+								"weighted":	  [9, 90, 3, 4, 5, 6],
+							}
+						},
+						"values":[-2,-1,1,2,3,4],
+						"missings":[true, true,false,false,false,false],
+						"labels":["-8", "no response","Hauptschule","Realschule","Gymnasium","University"],
 					}
 				}
 			}
 			
+			if(options.missings == true){
+				hideMissings = true
+			}
+			else{
+				hideMissings = false
+			}
+			
+			if(options.weights == true){
+				dataType = "weighted"
+			}
+			else{
+				dataType = "frequencies"
+			}
+			
+			
+	
 
-			
-			
-			
 			data = [];
-			for(i = 0;  i < rawData.uni.frequencies.length; i++){
+			for(i = 0;  i < rawData.uni[dataType].length; i++){
 				if(hideMissings == true && rawData.uni.missings[i]){
 					continue;
 				}
 				
-				tmp = [rawData.uni.labels[i], rawData.uni.frequencies[i]];
+				tmp = [rawData.uni.labels[i], rawData.uni[dataType][i]];
 				data.push(tmp);	
 			}
 
@@ -74,8 +118,16 @@ var cat_uni = function cat_uni(){
 					.enter()
 					.append("text")
 					.attr("class", "text");
-			
-					
+	
+
+		if(options.percent == true){
+			var sum =  d3.sum(data.map(function(d){return d[1] }));
+			format = d3.format("0.1%");
+			text.text(function(d) {return format(d[1] / sum)}) 					
+		}
+		else{
+			text.text(function(d) {return (d[1])})	
+		}			
 
 		var xScale = d3.scale.linear()
 						.domain([0, d3.max(data, function(d) {
@@ -89,6 +141,7 @@ var cat_uni = function cat_uni(){
 		var yScale = d3.scale.ordinal()
 						.domain(data.map(function(d){return d[0]}))
 						.rangeRoundBands([h - padding, 0]);
+					
 
 						
 							
@@ -121,10 +174,8 @@ var cat_uni = function cat_uni(){
 
 
 		barHeight = ((h -padding) / data.length) - barPadding;
-			
 		text.attr("x", function(d) { return xScale(d[1])-3})
 			.attr("y", function(d) {return yScale(d[0]) + (barHeight/2)} )
-			.text(function(d) {return d[1]})
 			.attr("transform", "translate(" + padding + ",0)");
 
 }

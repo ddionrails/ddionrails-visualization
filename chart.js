@@ -1,5 +1,6 @@
 var stacked;
-var hideMissings;					
+var hideMissings;	
+var colors;
 
 function organizeData(options, menu_c_active){
 	
@@ -64,7 +65,9 @@ function organizeData(options, menu_c_active){
 					}
 				}
 			}
-
+			
+	colors = d3.scale.category20();
+		colors.domain(rawData.bi[menu_c_active].labels)
      
 	if(options.missings == true){
 		hideMissings = true
@@ -157,9 +160,6 @@ function drawChart(){
 		var yScale = d3.scale.linear()
 						.domain([0, d3.max(stacked[stacked.length - 1], function(d) { return d.y0 + d.y})])
 						.range([h - padding, 0]);
-						
-		var zScale = d3.scale.category20();
-	
 
 		var xAxis = d3.svg.axis()
 						.scale(xScale)
@@ -181,13 +181,17 @@ function drawChart(){
 			.attr("class", "axis")
 			.attr("transform", "translate(" + padding + ",0)");		
 		
-	
+
          var layer = svg.selectAll("layer")
             .data(stacked)
             .enter()
 			.append("g")
             .attr("class", "layer")
-            .style("fill", function(d, i) { return zScale(i)})
+            .style("fill", function(d){
+				for(i in d){
+					return colors(d[i].label)
+				}
+			})
 			.attr("transform", "translate(" + padding + ",0)");			
 
            

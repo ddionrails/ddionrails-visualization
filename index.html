@@ -7,7 +7,8 @@
 		<script src="http://d3js.org/d3.v2.js"></script>   
 		
 		<script src="./chart.js"></script>
-		<script src="./cat_uni.js"></script>	
+		<script src="./cat_uni.js"></script>
+		<script src="./testdata/edu.json"></script>
 		<link rel="stylesheet" href="./style.css" />
                 
     </head>
@@ -20,26 +21,31 @@
 
 		<script>
 			
-			//console.log(returnVarName())
+			
+
 		
 			// Menu
 			var hSvg = 41;
 			var textHeight = 15;
 			var w =422.75;
 			
-			cat_uni();
-			
 			menu_c = ["age", "sex", "sample", "wave"];
 			menu_o = ["percent", "missings", "weights"]
 			
 			var barWidth = (w/menu_c.length) - 20;
 			
-
+			var menu_c_active = "none";
+			var options = {
+				"missings": 	false,
+				"percent":		false,
+				"weights":		false,
+			}	
+			
 			var menu_h_svg = d3.select("#menu")
 						.append("svg")
 						.attr("width", 100)
 						.attr("height", hSvg)
-						.on("click", cat_uni());
+						.on("click", cat_uni(options));
 			
 			var menu_c_svg = d3.select("#menu")
 						.append("svg")
@@ -60,26 +66,32 @@
 						.domain(menu_o)
 						.rangeBands([65, 250]);
 			
-			var menu_c_active = "frequencies";			
+			
+			
+			cat_uni(options);
 			menu_h_svg.append("text")
-						.text("Education")
-						.attr("x", 10)
+						.text(rawData.variable)
+						.style("font-size", "14px")
+						.attr("x", 90)
 						.attr("y", 10 + textHeight*2/3)
 						.attr("class", "var-name")
-						.attr("text-anchor", "right")
+						.attr("text-anchor", "end")
 						.on("click", function(){
+							
 							d3.selectAll(".menu_circles").attr("fill", "white").attr("stroke", "steelblue");
 							d3.selectAll(".menu_rects").attr("fill", "white").attr("stroke", "grey");
-							cat_uni()
+							options = {
+								"missings": 	false,
+								"percent":		false,
+								"weights":		false,
+							}	
+							cat_uni(options);
+							menu_c_active = "none";
 						});
 			
 			var circle_filled = false;
 			
-			var options = {
-				"missings": 	false,
-				"percent":		false,
-				"weights":		false,
-			}
+			
 			
 			var menu_c = menu_c_svg.selectAll("g")
 							.data(menu_c)
@@ -88,7 +100,7 @@
 							.on("click", function(d){
 								
 								menu_c_active = d;
-								
+					
 								try{
 									organizeData(options, menu_c_active);
 									drawChart();
@@ -144,15 +156,25 @@
 								
 								if(options[d] == false){
 									options[d] = true;
-									organizeData(options, menu_c_active);
-									drawChart();
+									if(menu_c_active == "none" ){
+										cat_uni(options);
+									}
+									else{
+										organizeData(options, menu_c_active);
+										drawChart();
+									}
 									d3.select(this).select("rect").attr("fill", "steelblue")
 									
 								}
 								else{
 									options[d] = false;
-									organizeData(options, menu_c_active);
-									drawChart();
+									if(menu_c_active == "none" ){
+										cat_uni(options);
+									}
+									else{
+										organizeData(options, menu_c_active);
+										drawChart();
+									}
 									d3.select(this).select("rect").attr("fill", "white")
 								}
 						
