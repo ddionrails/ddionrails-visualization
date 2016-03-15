@@ -17,13 +17,23 @@
 		<div id='chart'></div>
 		
 		<script>
+		
+		const x = true;
+	
+		if(x == true){
+			dataType = 'weighted'
+		}
+		else{
+			dataType = 'density'
+		}
+
 
 		const margin = {top: 30, right: 100, bottom: 30, left: 50};
 		
 		const w =600;
 		const h = 300;
 		const padding = 100;
-		const data = rawData.uni.density;
+		const data = rawData.uni[dataType];
 		
 		const svg = d3.select('#chart')
 						.append('svg')
@@ -52,12 +62,18 @@
 
 		const yAxis = d3.svg.axis()
 						.scale(yScale)
-						.orient('left');						
+						.orient('left');	
+	
+		const xAxisLabel = svg.append('text')
+							.attr('transform', 'translate(' + (w+padding)/2 + ',' + (h-margin.bottom) + ')')
+							.attr('class', 'labels')
+							.attr('text-anchor', 'middle')
+							.text(rawData.label);
 		
 		svg.append('g')
 			.call(xAxis)
 			.attr('class', 'axis')
-			.attr('transform', 'translate(' + padding + ',' + (h-padding + margin.top) +')');				
+			.attr('transform', 'translate(' + padding + ',' + (h-padding + margin.top) + ')');				
 	
 		svg.append('g')
 			.call(yAxis)
@@ -101,6 +117,8 @@
 				.attr('dy', -10)
 				.attr('text-anchor', 'middle')
 				.text(function(d) { return d; });
+				
+		
 						
 		
 		//});

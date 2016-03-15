@@ -4,207 +4,177 @@
         <title>Visualization</title>
 		
 		<!-- D3.js -->
-		<script src="http://d3js.org/d3.v2.js"></script>   
+		<script src='http://d3js.org/d3.v2.js'></script>   
 		
-		<script src="./chart.js"></script>
-		<script src="./cat_uni.js"></script>
-		<script src="./testdata/edu.json"></script>
-		<link rel="stylesheet" href="./style.css" />
+		<script src='./chart.js'></script>
+		<script src='./cat_uni.js'></script>
+		<script src='./testdata/edu.json'></script>
+		<link rel='stylesheet' href='./style.css' />
                 
     </head>
 	
     <body>
 	
-		<div id="menu"></div>
-		<div id="chart"></div>
+		<div id='menu'></div>
+		<div id='chart'></div>
 		
 
 		<script>
 			
-			
-
-		
 			// Menu
-			var hSvg = 41;
-			var textHeight = 15;
-			var w =422.75;
-			
-			menu_c = ["age", "sex", "sample", "wave"];
-			menu_o = ["percent", "missings", "weights"]
-			
-			var barWidth = (w/menu_c.length) - 20;
-			
-			var menu_c_active = "none";
-			var options = {
-				"missings": 	false,
-				"percent":		false,
-				"weights":		false,
-			}	
-			
-			var menu_h_svg = d3.select("#menu")
-						.append("svg")
-						.attr("width", 100)
-						.attr("height", hSvg)
-						.on("click", cat_uni(options));
-			
-			var menu_c_svg = d3.select("#menu")
-						.append("svg")
-						.attr("width", 250)
-						.attr("height", hSvg);
-						
-			var menu_o_svg = d3.select("#menu")
-						.append("svg")
-						.attr("width", 250)
-						.attr("height", hSvg);
-						
-						
-			var menu_c_scale = d3.scale.ordinal()
-						.domain(menu_c)
-						.rangeBands([10, 250]);
-						
-			var menu_o_scale = d3.scale.ordinal()
-						.domain(menu_o)
-						.rangeBands([65, 250]);
-			
-			
+			const h = 40;
+			const menu2_data = ['age', 'sex', 'sample', 'wave'];
+			const menu3_data = ['percent', 'missings', 'weights'];
+		
+			let options = {
+				'missings': 	false,
+				'percent':		false,
+				'weights':		false,
+			}
+			let menu2_active = 'none';
+			let menu3_active;
+			let circle_filled = false;
 			
 			cat_uni(options);
-			menu_h_svg.append("text")
+			
+			function svg(w, h){
+				let svg = d3.select('#menu')
+							.append('svg')
+							.attr('width', w)
+							.attr('height', h);
+				return svg;
+			}
+			
+			function scale(domain, rangeMin, rangeMax){
+				let scale = d3.scale.ordinal()
+								.domain(domain)
+								.rangeBands([rangeMin, rangeMax]);
+				return scale;
+			}
+			
+			const menu1_svg = svg(100, h);
+			const menu2_svg = svg(250, h);
+			const menu3_svg = svg(250, h);
+					
+			const menu2_scale = scale(menu2_data, 10, 250);
+			const menu3_scale = scale(menu3_data, 65, 250);			
+									
+	
+			menu1_svg.append('text')
 						.text(rawData.variable)
-						.style("font-size", "14px")
-						.attr("x", 90)
-						.attr("y", 10 + textHeight*2/3)
-						.attr("class", "var-name")
-						.attr("text-anchor", "end")
-						.on("click", function(){
+						.attr('x', 90)
+						.attr('y', h / 2)
+						.attr('class', 'menu1_text')
+						.on('click', function(){
 							
-							d3.selectAll(".menu_circles").attr("fill", "white").attr("stroke", "steelblue");
-							d3.selectAll(".menu_rects").attr("fill", "white").attr("stroke", "grey");
+							d3.selectAll('.menu2_circles').attr('fill', 'white').attr('stroke', 'steelblue');
+							d3.selectAll('.menu_rects').attr('fill', 'white').attr('stroke', 'grey');
 							options = {
-								"missings": 	false,
-								"percent":		false,
-								"weights":		false,
+								'missings': 	false,
+								'percent':		false,
+								'weights':		false,
 							}	
 							cat_uni(options);
-							menu_c_active = "none";
+							menu2_active = 'none';
 						});
-			
-			var circle_filled = false;
-			
-			
-			
-			var menu_c = menu_c_svg.selectAll("g")
-							.data(menu_c)
+		
+			const menu2 = menu2_svg.selectAll('g')
+							.data(menu2_data)
 							.enter()
-							.append("g")
-							.on("click", function(d){
-								
-								menu_c_active = d;
-					
-								try{
-									organizeData(options, menu_c_active);
-									drawChart();
-								}
-								catch(error){
-									d3.select(".chart").remove();
-									d3.select("#chart").append("p").text("Not available.").attr("class", "chart");
-								}
-								
-								
-								if(circle_filled == false){
-									d3.selectAll("circle").attr("fill", "white").attr("stroke", "grey")
-									d3.select(this).select("circle").attr("fill", "steelblue").attr("stroke", "steelblue")
-									circle_filled = true;
-								}
-								else{
-									d3.selectAll("circle").attr("fill", "white").attr("stroke", "grey")
-									d3.select(this).select("circle").attr("fill", "steelblue").attr("stroke", "steelblue")
-									circle_filled = false;
-									//cat_uni();
-								}	
-							});	
-			
-			menu_c.append("circle")
-					.attr("cx", function(d, i){return menu_c_scale(i)})
-					.attr("cy", 16)
-					.attr("r", 5)
+							.append('g');
+							
+			menu2.append('circle')
+					.attr('cx', function(d, i){return menu2_scale(i)})
+					.attr('cy', 16)
+					.attr('r', 5)
 					.attr("fill", "white")
 					.attr("stroke", "grey")
 					.attr("stroke-width", 1)
-					.attr("class", "menu_circles");
+					.attr('class', 'menu2_circles');
 					
-			menu_c.append("text")
-					.attr("x", function(d, i){return menu_c_scale(i) + 10})
-					.attr("y", 10 + textHeight*2/3)
-					.text(function(d){ return d})
-					.attr("text-anchor", "left")
-					.attr("font-weight", "")
-					.attr("fill", "grey")
-					.attr("font-family", "sans-serif")
-					.attr("font-size", "11px");		
-		
-					
-	
+			menu2.append('text')
+					.attr('x', function(d, i){return menu2_scale(i) + 10})
+					.attr('y', h / 2)
+					.text(function(d){ return d; })
+					.attr('class', 'menu2_text');					
+							
+							
+			menu2.on('click', function(d){
+				menu2_active = d;
+				
+				try {
+					organizeData(options, menu2_active);
+					drawChart();
+				}
+				catch(error) {
+					d3.select('.chart').remove();
+					d3.select('#chart').append('p').text('Not available.').attr('class', 'chart');
+				};
+				
+				console.log(circle_filled)
+				if(circle_filled == false) {
+					d3.selectAll('circle').attr('fill', 'white').attr('stroke', 'grey')
+					d3.select(this).select('circle').attr('fill', 'steelblue').attr('stroke', 'steelblue')
+					circle_filled = true;
+				}
+				else {
+					d3.selectAll('circle').attr('fill', 'white').attr('stroke', 'grey')
+					d3.select(this).select('circle').attr('fill', 'steelblue').attr('stroke', 'steelblue')
+					circle_filled = false;
+				};	
+			});	
 			
-			
-			
-			var menu_o = menu_o_svg.selectAll("g")
-							.data(menu_o)
+			const menu3 = menu3_svg.selectAll('g')
+							.data(menu3_data)
 							.enter()
-							.append("g")
-							.on("click", function(d){
-								
-								if(options[d] == false){
-									options[d] = true;
-									if(menu_c_active == "none" ){
-										cat_uni(options);
-									}
-									else{
-										organizeData(options, menu_c_active);
-										drawChart();
-									}
-									d3.select(this).select("rect").attr("fill", "steelblue")
-									
-								}
-								else{
-									options[d] = false;
-									if(menu_c_active == "none" ){
-										cat_uni(options);
-									}
-									else{
-										organizeData(options, menu_c_active);
-										drawChart();
-									}
-									d3.select(this).select("rect").attr("fill", "white")
-								}
-						
-							});		
-					
-
-			menu_o.append("rect")
-					.attr("x", function(d, i){return menu_o_scale(i)})
-					.attr("y", 12)
-					.attr("height", 9)
-					.attr("width", 9)
+							.append('g');
+		
+			menu3.append('rect')
+					.attr('x', function(d, i){return menu3_scale(i)})
+					.attr('y', 12)
+					.attr('height', 9)
+					.attr('width', 9)
 					.attr("fill", "white")
 					.attr("stroke", "steelblue")
 					.attr("stroke-width", 1)
-					.attr("class", "menu_rects");	
+					.attr('class', 'menu3_rects');	
 
-			var textHeight = 15;			
-			var menu_o_active;
-			menu_o.append("text")
-					.attr("x", function(d, i){return menu_o_scale(i) + 14})
-					.attr("y", 10 + textHeight*2/3)
+			menu3.append('text')
+					.attr('x', function(d, i){return menu3_scale(i) + 14})
+					.attr('y', h / 2)
 					.text(function(d){ return d})
-					.attr("text-anchor", "left")
-					.attr("font-weight", "")
-					.attr("fill", "grey")
-					.attr("font-family", "sans-serif")
-					.attr("font-size", "11px");
-		
+					.attr('text-anchor', 'left')
+					.attr('font-weight', '')
+					.attr('fill', 'grey')
+					.attr('font-family', 'sans-serif')
+					.attr('font-size', '11px');
+					
+			menu3.on('click', function(d){
+								
+				if(options[d] == false){
+					options[d] = true;
+					if(menu2_active == 'none' ){
+						cat_uni(options);
+					}
+					else{
+						organizeData(options, menu2_active);
+						drawChart();
+					}
+					d3.select(this).select('rect').attr('fill', 'steelblue')	
+				}
+				else{
+					options[d] = false;
+					if(menu2_active == 'none' ){
+						cat_uni(options);
+					}
+					else{
+						organizeData(options, menu2_active);
+						drawChart();
+					}
+					d3.select(this).select('rect').attr('fill', 'white')
+				}
+			});		
 			
-						
 		</script>
 		</body>
 </html>
