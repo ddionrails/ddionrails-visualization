@@ -9,7 +9,7 @@ var rawData = {
         "weighted":[14,121,221,314,100],
         "values":[-1,1,2,3,4],
         "missings":[true,false,false,false,false],
-        "labels":["no response","Hauptschule","Realschule","Gymnasium","University"]
+        "labels":["keine Antwort","Hauptschule","Realschule","Gymnasium","University"]
     },
     "bi":{
         "sex":{
@@ -28,7 +28,7 @@ var rawData = {
             },
             "values":[-1,1,2,3,4],
             "missings":[true,false,false,false,false],
-            "labels":["no response","Hauptschule","Realschule","Gymnasium","University"]
+            "labels":["keine Antwort","Hauptschule","Realschule","Gymnasium","University"]
         }
     }
 }

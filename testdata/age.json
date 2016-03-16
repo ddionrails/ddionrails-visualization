@@ -9,7 +9,13 @@ var rawData = {
         "weighted":[14,121,221,314,100],
         "min":20,
         "max":100,
-        "by":20
+        "by":20,
+        "missings":{
+            "frequencies":[100,200],
+            "weighted":[110,190],
+            "labels":["trifft nicht zu", "keine Antwort"],
+            "values":[-2,-1]
+        }
     },
     "bi":{
         "sex":{
@@ -18,12 +24,24 @@ var rawData = {
                 "0":{
                     "label":"Mann",
                     "density":[7,123,321,214,100],
-                    "weighted":[9,121,221,314,100]
+                    "weighted":[9,121,221,314,100],
+                    "missings":{
+                        "frequencies":[50,50],
+                        "weighted":[55,45],
+                        "labels":["trifft nicht zu", "keine Antwort"],
+                        "values":[-2,-1]
+                    }
                 },
                 "1":{
                     "label":"Frau",
                     "density":[12,123,321,214,100],
-                    "weighted":[12,73,221,314,150]
+                    "weighted":[12,73,221,314,150],
+                    "missings":{
+                        "frequencies":[50,150],
+                        "weighted":[55,145],
+                        "labels":["trifft nicht zu", "keine Antwort"],
+                        "values":[-2,-1]
+                    }
                 }
             },
             "min":20,
