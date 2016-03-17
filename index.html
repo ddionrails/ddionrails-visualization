@@ -26,19 +26,19 @@
 			const menu2_data = ['age', 'sex', 'sample', 'wave'];
 			const menu3_data = ['percent', 'missings', 'weights'];
 		
-			let options = {
+			var options = {
 				'missings': 	false,
 				'percent':		false,
 				'weights':		false,
 			}
-			let menu2_active = 'none';
-			let menu3_active;
-			let circle_filled = false;
+			var menu2_active = 'none';
+			var menu3_active;
+			var circle_filled = false;
 			
 			cat_uni(options);
 			
 			function svg(w, h){
-				let svg = d3.select('#menu')
+				var svg = d3.select('#menu')
 							.append('svg')
 							.attr('width', w)
 							.attr('height', h);
@@ -46,7 +46,7 @@
 			}
 			
 			function scale(domain, rangeMin, rangeMax){
-				let scale = d3.scale.ordinal()
+				var scale = d3.scale.ordinal()
 								.domain(domain)
 								.rangeBands([rangeMin, rangeMax]);
 				return scale;

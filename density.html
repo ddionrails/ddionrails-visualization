@@ -57,12 +57,12 @@
 		
 		
 		const xAxis = d3.svg.axis()
-						.scale(xScale)
-						.orient('bottom');
+			.scale(xScale)
+			.orient('bottom');
 
 		const yAxis = d3.svg.axis()
-						.scale(yScale)
-						.orient('left');	
+			.scale(yScale)
+			.orient('left');	
 	
 		const xAxisLabel = svg.append('text')
 							.attr('transform', 'translate(' + (w+padding)/2 + ',' + (h-margin.bottom) + ')')

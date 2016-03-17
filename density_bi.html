@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Bi-Var Density</title>
+		
+		<!-- D3.js -->
+		<script src='http://d3js.org/d3.v2.js'></script>   
+		
+		<script src='./testdata/age.json'></script>	
+		<link rel='stylesheet' href='./style.css' />
+                
+    </head>
+	
+    <body>
+	
+		<div id='menu'></div>
+		<div id='chart'></div>
+		
+		<script>
+        
+        var data  = [];
+		var labels = [];
+       dataType = "density"
+        menu2_active = "sex";
+        
+       
+				
+	for(i in rawData.bi[menu2_active].categories){
+		id = rawData.bi[menu2_active].categories[i].label;
+				
+		// Gewichtet oder nicht
+		freqs = rawData.bi[menu2_active].categories[i][dataType];
+			
+		// Missings oder nicht
+		//freqs.unshift(id);
+		data.push(freqs);
+		labels.push(id);
+				
+	}
+
+
+		function frame(){
+		
+		const margin = {top: 30, right: 100, bottom: 30, left: 50};
+		
+		const w =600;
+		const h = 300;
+		const padding = 100;
+		
+		const svg = d3.select('#chart')
+						.append('svg')
+						.attr('width', w)
+						.attr('height', h)
+						.attr('class', 'chart');
+						
+		const xScale = 	d3.scale.ordinal()
+						.domain(labels)
+						.rangeRoundBands([0, w-padding], 0, 0);
+						
+		const yScale = d3.scale.ordinal()
+						.domain(d3.range(rawData.uni.min, rawData.uni.max + 1, rawData.uni.by))
+						.rangeRoundBands([h - padding, 0]);
+		
+		
+		const xAxis = d3.svg.axis()
+			.scale(xScale)
+			.orient('bottom');
+
+		const yAxis = d3.svg.axis()
+			.scale(yScale)
+			.orient('left');	
+	
+		const yAxisLabel = svg.append('text')
+							.attr('transform', 'translate(' + 65 + ',' + (h/2) + ')rotate(-90)')
+							.attr('class', 'labels')
+							.attr('text-anchor', 'start')
+							.text(rawData.label);
+		
+		svg.append('g')
+			.call(xAxis)
+			.attr('class', 'axis')
+			.attr('transform', 'translate(' + padding + ',' + (h-padding + margin.top) + ')');				
+	
+		svg.append('g')
+			.call(yAxis)
+			.attr('class', 'axis')
+			.attr('transform', 'translate(' + padding + ',' + margin.top + ')');	
+	
+		for(i = 0; i < data.length; i++){
+		
+		const xScale2 = d3.scale.ordinal()
+						.domain(d3.range(rawData.uni.min, rawData.uni.max + 1, rawData.uni.by))
+						.rangeRoundBands([0, h - padding], 0, 0.5);
+						
+						
+		const yScale2 = d3.scale.linear()
+						.domain([0, d3.max(data, function(d) { return d3.max(d); })])
+						.range([(xScale.rangeBand()* (i) + (xScale.rangeBand()/2)), ((xScale.rangeBand()* (i+1))-5)]);
+		
+		
+		const xAxis2 = d3.svg.axis()
+						.scale(xScale2)
+						.orient('bottom');
+
+		const yAxis2 = d3.svg.axis()
+						.scale(yScale2)
+						.orient('left');	
+                        
+		
+		const path = d3.svg.area()
+					 .x(function(d, i) {return xScale2(i)})
+					 .y(function (d) {return yScale2(d)})
+                     .y0(function (d) {return yScale2(-d)})
+					 .interpolate('cardinal');
+					 
+                     
+				 
+		svg.append('path')
+			.attr('class', 'line')
+			.attr('d', path(data[i]))
+            .attr("transform", "translate(" + 100 + ", 230) rotate(-90)")
+			.style("fill", "steelblue");
+		
+		}	
+		
+		}
+	
+    frame();
+	
+        </script>
+	</body>
+</html>
