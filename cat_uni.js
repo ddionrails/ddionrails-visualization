@@ -81,7 +81,8 @@
 				dataType = 'frequencies'
 			}
 			
-			
+			colors = d3.scale.category20();
+            colors.domain(rawData.uni.labels)
 	
 
 			data = [];
@@ -111,6 +112,7 @@
 					.data(data)
 					.enter()
 					.append('rect')
+                    .style('fill', function(d){ return colors(d[0]); })
 					.attr('class', 'rects');
 			
 			text = svg.selectAll('text')
