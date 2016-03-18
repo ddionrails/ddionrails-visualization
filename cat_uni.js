@@ -1,72 +1,14 @@
  function cat_uni(options){
 
 	d3.selectAll('.chart').remove();
-			
-			//var rawData = d3.json('./testdata/edu.json');
-
-			var rawData = { 
-		  
-				'study':'soep-test',
-				'dataset':'test1',
-				'variable':'edu',
-				'label':'Hoechster Bildungsabschluss',
-				'uni':{
-					'frequencies':[20, 12,123,321,214,100],
-					'weighted':	  [30, 5, 123, 400, 200, 90],
-					'values':	  [-8,-2,-1,1,2,3,4],
-					'missings':[true, true,false,false,false,false],
-					'labels':['-8', 'no response','Hauptschule','Realschule','Gymnasium','University'],
-				},
-				'bi':{
-					'sex':{
-						'label':'Geschlecht',
-						'categories':{
-							'0':{
-								'label':'Mann',
-								'frequencies':[4, 1, 2, 3, 4, 5],
-								'weighted':	  [5, 13, 3, 7, 9, 6],
-							},
-							'1':{
-								'label':'Frau',
-								'frequencies':[4, 2, 3, 6, 8, 10],
-								'weighted':	  [2, 4, 3, 7, 11, 13],
-							}
-						},
-						'values':[-8,-2,-1,1,2,3,4],
-						'missings':[true, true,false,false,false,false],
-						'labels':['-8', 'no response','Hauptschule','Realschule','Gymnasium','University'],
-					},
-					'wave':{
-						'label':'Welle',
-						'categories':{
-							'0':{
-								'label':'94',
-								'frequencies':[30, 60, 10, 4, 24, 35],
-								'weighted':	  [20, 90, 10, 3, 20, 34],
-							},
-							'1':{
-								'label':'95',
-								'frequencies':[34, 33, 2, 9, 8, 10],
-								'weighted':	  [30, 30, 4, 10, 7, 6],
-							},
-							'2':{
-								'label':'96',
-								'frequencies':[45, 70, 30, 65, 83, 10],
-								'weighted':	  [45, 80, 20, 50, 60, 6],
-							},
-							'3':{
-								'label':'97',
-								'frequencies':[55, 40, 30, 12, 7, 43],
-								'weighted':	  [50, 45, 35,15, 7,44],
-							}
-						},
-						'values':[-8,-2,-1,1,2,3,4],
-						'missings':[true, true,false,false,false,false],
-						'labels':['-8', 'no response','Hauptschule','Realschule','Gymnasium','University'],
-					}
-				}
-			}
-			
+			/**
+            var rawData;
+			d3.json('./testdata/edu.json', function(error, json) {
+			if (error) return console.warn(error);
+				rawData = json; 
+	
+            console.log(rawData.uni[dataType]) **/
+        
 			if(options.missings == true){
 				hideMissings = true
 			}
@@ -179,5 +121,6 @@
 		text.attr('x', function(d) { return xScale(d[1])-3})
 			.attr('y', function(d) {return yScale(d[0]) + (barHeight/2)} )
 			.attr('transform', 'translate(' + padding + ',0)');
-
-}
+            
+        }
+//}

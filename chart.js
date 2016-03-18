@@ -138,7 +138,7 @@ function organizeData(options, menu2_active){
 			stacked = d3.layout.stack().offset(offset)(mapped);
 	}	
 
-function drawChart(){
+function draw_biCatChart(){
 	
 	d3.selectAll('.chart').remove();
 	
@@ -225,7 +225,6 @@ function drawChart(){
 		
 }
 
-	
 
 
 

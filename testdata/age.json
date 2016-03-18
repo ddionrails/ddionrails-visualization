@@ -1,4 +1,4 @@
-var rawData = {
+{
     "study":"soep-test",
     "dataset":"test1",
     "variable":"age",
@@ -23,7 +23,7 @@ var rawData = {
             "categories":{
                 "0":{
                     "label":"Mann",
-                    "density":[7,123,521,214,100],
+                    "density":[7,123,321,214,100],
                     "weighted":[9,121,221,314,100],
                     "missings":{
                         "frequencies":[50,50],
@@ -34,7 +34,7 @@ var rawData = {
                 },
                 "1":{
                     "label":"Frau",
-                    "density":[100,200,100,200,100],
+                    "density":[12,123,321,214,100],
                     "weighted":[12,73,221,314,150],
                     "missings":{
                         "frequencies":[50,150],
@@ -42,51 +42,7 @@ var rawData = {
                         "labels":["trifft nicht zu", "keine Antwort"],
                         "values":[-2,-1]
                     }
-                },
-				"2":{
-                    "label":"Kind",
-                    "density":[200,200,300,40,100],
-                    "weighted":[12,73,221,314,150],
-                    "missings":{
-                        "frequencies":[50,150],
-                        "weighted":[55,145],
-                        "labels":["trifft nicht zu", "keine Antwort"],
-                        "values":[-2,-1]
-                    }
-                },
-				 "3":{
-                    "label":"Hund",
-                    "density":[100,200,100,200,100],
-                    "weighted":[12,73,221,314,150],
-                    "missings":{
-                        "frequencies":[50,150],
-                        "weighted":[55,145],
-                        "labels":["trifft nicht zu", "keine Antwort"],
-                        "values":[-2,-1]
-                    }
-                },
-				 "4":{
-                    "label":"Katze",
-                    "density":[100,200,100,700,100],
-                    "weighted":[12,73,221,314,150],
-                    "missings":{
-                        "frequencies":[50,150],
-                        "weighted":[55,145],
-                        "labels":["trifft nicht zu", "keine Antwort"],
-                        "values":[-2,-1]
-                    }
-                },
-				"5":{
-                    "label":"Maus",
-                    "density":[50,50,0,40,20],
-                    "weighted":[12,73,221,314,150],
-                    "missings":{
-                        "frequencies":[50,150],
-                        "weighted":[55,145],
-                        "labels":["trifft nicht zu", "keine Antwort"],
-                        "values":[-2,-1]
-                    }
-                },
+                }
             },
             "min":20,
             "max":100,
@@ -94,3 +50,4 @@ var rawData = {
         }
     }
 }
+

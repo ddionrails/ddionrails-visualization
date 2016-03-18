@@ -2,13 +2,16 @@
 <html>
     <head>
         <title>Visualization</title>
+       <meta charset="utf-8">
 		
 		<!-- D3.js -->
-		<script src='http://d3js.org/d3.v2.js'></script>   
+		<script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>  
 		
 		<script src='./chart.js'></script>
 		<script src='./cat_uni.js'></script>
-		<script src='./testdata/edu.json'></script>
+        <script src='./density.js'></script>
+        <script src='./density_bi.js'></script>
+		<!--<script src='./testdata/edu.json'></script>-->
 		<link rel='stylesheet' href='./style.css' />
                 
     </head>
@@ -17,14 +20,71 @@
 	
 		<div id='menu'></div>
 		<div id='chart'></div>
+        <div id="chart_missings"></div>
 		
 
 		<script>
+        
+            // Load Data (use d3.json() later)
+            var rawData = {
+                "study":"soep-test",
+                "dataset":"test1",
+                "variable":"age",
+                "label":"Alter",
+                "scale":"num",
+                "uni":{
+                    "density":[12,123,321,214,100],
+                    "weighted":[14,121,221,314,100],
+                    "min":20,
+                    "max":100,
+                    "by":20,
+                    "missings":{
+                        "frequencies":[100,200],
+                        "weighted":[110,190],
+                        "labels":["trifft nicht zu", "keine Antwort"],
+                        "values":[-2,-1]
+                    }
+                },
+                "bi":{
+                    "sex":{
+                        "label":"Geschlecht",
+                        "categories":{
+                            "0":{
+                                "label":"Mann",
+                                "density":[7,123,321,214,100],
+                                "weighted":[9,121,221,314,100],
+                                "missings":{
+                                    "frequencies":[50,50],
+                                    "weighted":[55,45],
+                                    "labels":["trifft nicht zu", "keine Antwort"],
+                                    "values":[-2,-1]
+                                }
+                            },
+                            "1":{
+                                "label":"Frau",
+                                "density":[12,123,321,214,100],
+                                "weighted":[12,73,221,314,150],
+                                "missings":{
+                                    "frequencies":[50,150],
+                                    "weighted":[55,145],
+                                    "labels":["trifft nicht zu", "keine Antwort"],
+                                    "values":[-2,-1]
+                                }
+                            }
+                        },
+                        "min":20,
+                        "max":100,
+                        "by":20
+                    }
+                }
+            }
+
+            
 			
-			// Menu
-			const h = 40;
-			const menu2_data = ['age', 'sex', 'sample', 'wave'];
-			const menu3_data = ['percent', 'missings', 'weights'];
+			// Define the menu
+			var h = 40;
+			var menu2_data = ['age', 'sex', 'sample', 'wave'];
+			var menu3_data = ['percent', 'missings', 'weights'];
 		
 			var options = {
 				'missings': 	false,
@@ -35,16 +95,27 @@
 			var menu3_active;
 			var circle_filled = false;
 			
-			cat_uni(options);
+            // Default chart: univariate categories / density chart
+            if(rawData.scale == "cat" ){
+                cat_uni(options);
+            }
+            else if(rawData.scale == "num"){
+                density(options);
+            }
+            else{
+                console.log("Error. Not defined.")
+            }
 			
-			function svg(w, h){
-				var svg = d3.select('#menu')
+            // Append SVG Element to DOM
+			function svg(w, h, selector){
+				var svg = d3.select(selector)
 							.append('svg')
 							.attr('width', w)
 							.attr('height', h);
 				return svg;
 			}
 			
+            // Set Scales for charts
 			function scale(domain, rangeMin, rangeMax){
 				var scale = d3.scale.ordinal()
 								.domain(domain)
@@ -52,14 +123,18 @@
 				return scale;
 			}
 			
-			const menu1_svg = svg(100, h);
-			const menu2_svg = svg(250, h);
-			const menu3_svg = svg(250, h);
+            // Menu divided in 3 parts: 
+            // menu1: var-name
+            // menu2: cross var with age, sex ... (bivariate)
+            // menu3: options -- show in percentages, hide missings, weighted
+			var menu1_svg = svg(100, h, '#menu');
+			var menu2_svg = svg(250, h, '#menu');
+			var menu3_svg = svg(250, h, '#menu');
 					
-			const menu2_scale = scale(menu2_data, 10, 250);
-			const menu3_scale = scale(menu3_data, 65, 250);			
+			var menu2_scale = scale(menu2_data, 10, 250);
+			var menu3_scale = scale(menu3_data, 65, 250);			
 									
-	
+            // menu1: on click, reset all options and show default chart
 			menu1_svg.append('text')
 						.text(rawData.variable)
 						.attr('x', 90)
@@ -68,23 +143,30 @@
 						.on('click', function(){
 							
 							d3.selectAll('.menu2_circles').attr('fill', 'white').attr('stroke', 'steelblue');
-							d3.selectAll('.menu_rects').attr('fill', 'white').attr('stroke', 'grey');
+							d3.selectAll('.menu3_rects').attr('fill', 'white').attr('stroke', 'grey');
 							options = {
 								'missings': 	false,
 								'percent':		false,
 								'weights':		false,
 							}	
-							cat_uni(options);
+							 if(rawData.scale == "cat" ){
+                                cat_uni(options);
+                            }
+                            if(rawData.scale == "num"){
+                                density(options);
+                            }
 							menu2_active = 'none';
 						});
 		
-			const menu2 = menu2_svg.selectAll('g')
+            // Append elements of menu2 (bivariate charts)
+			var menu2 = menu2_svg.selectAll('g')
 							.data(menu2_data)
 							.enter()
 							.append('g');
-							
+			
+    
 			menu2.append('circle')
-					.attr('cx', function(d, i){return menu2_scale(i)})
+					.attr('cx', function(d){ return menu2_scale(d)})
 					.attr('cy', 16)
 					.attr('r', 5)
 					.attr("fill", "white")
@@ -93,25 +175,30 @@
 					.attr('class', 'menu2_circles');
 					
 			menu2.append('text')
-					.attr('x', function(d, i){return menu2_scale(i) + 10})
+					.attr('x', function(d){return menu2_scale(d) + 10})
 					.attr('y', h / 2)
 					.text(function(d){ return d; })
 					.attr('class', 'menu2_text');					
 							
-							
+                               
 			menu2.on('click', function(d){
 				menu2_active = d;
 				
 				try {
-					organizeData(options, menu2_active);
-					drawChart();
+                    if(rawData.scale == "cat" ){
+                        organizeData(options, menu2_active);
+                        draw_biCatChart();
+                    }
+                    if(rawData.scale == "num"){
+                       density_bi(options); 
+                    }		
 				}
 				catch(error) {
-					d3.select('.chart').remove();
+					d3.selectAll('.chart').remove();
 					d3.select('#chart').append('p').text('Not available.').attr('class', 'chart');
 				};
 				
-				console.log(circle_filled)
+		
 				if(circle_filled == false) {
 					d3.selectAll('circle').attr('fill', 'white').attr('stroke', 'grey')
 					d3.select(this).select('circle').attr('fill', 'steelblue').attr('stroke', 'steelblue')
@@ -124,13 +211,14 @@
 				};	
 			});	
 			
-			const menu3 = menu3_svg.selectAll('g')
+            // Append elements of menu3 (options for univariate and bivariate charts)
+			var menu3 = menu3_svg.selectAll('g')
 							.data(menu3_data)
 							.enter()
 							.append('g');
 		
 			menu3.append('rect')
-					.attr('x', function(d, i){return menu3_scale(i)})
+					.attr('x', function(d){return menu3_scale(d)})
 					.attr('y', 12)
 					.attr('height', 9)
 					.attr('width', 9)
@@ -138,9 +226,8 @@
 					.attr("stroke", "steelblue")
 					.attr("stroke-width", 1)
 					.attr('class', 'menu3_rects');	
-
 			menu3.append('text')
-					.attr('x', function(d, i){return menu3_scale(i) + 14})
+					.attr('x', function(d){return menu3_scale(d) + 14})
 					.attr('y', h / 2)
 					.text(function(d){ return d})
 					.attr('text-anchor', 'left')
@@ -154,22 +241,43 @@
 				if(options[d] == false){
 					options[d] = true;
 					if(menu2_active == 'none' ){
-						cat_uni(options);
-					}
+                        if(rawData.scale == "cat" ){
+                            cat_uni(options);
+                        }
+                        if(rawData.scale == "num"){
+                            density(options);
+                        }
+                    }
 					else{
-						organizeData(options, menu2_active);
-						drawChart();
+						 if(rawData.scale == "cat" ){
+                            organizeData(options, menu2_active);
+                            draw_biCatChart();
+                        }
+                        if(rawData.scale == "num"){
+                            density_bi(options);
+                        }
 					}
 					d3.select(this).select('rect').attr('fill', 'steelblue')	
 				}
 				else{
 					options[d] = false;
 					if(menu2_active == 'none' ){
-						cat_uni(options);
+						 if(rawData.scale == "cat" ){
+                            cat_uni(options);
+                        }
+                        if(rawData.scale == "num"){
+                            density(options);
+                        }
 					}
 					else{
-						organizeData(options, menu2_active);
-						drawChart();
+                    if(rawData.scale == "cat" ){
+                        organizeData(options, menu2_active);
+                        draw_biCatChart();
+                    }
+                    if(rawData.scale == "num"){
+                        density_bi(options);
+                    }
+						
 					}
 					d3.select(this).select('rect').attr('fill', 'white')
 				}
