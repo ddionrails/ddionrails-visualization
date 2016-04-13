@@ -1,13 +1,9 @@
  function cat_uni(options){
 
 	d3.selectAll('.chart').remove();
-			/**
-            var rawData;
-			d3.json('./testdata/edu.json', function(error, json) {
-			if (error) return console.warn(error);
-				rawData = json; 
-	
-            console.log(rawData.uni[dataType]) **/
+		
+			var rData = rawData; 
+				
         
 			if(options.missings == true){
 				hideMissings = true
@@ -24,30 +20,35 @@
 			}
 			
 			colors = d3.scale.category20();
-            colors.domain(rawData.uni.labels)
+            colors.domain(rData.uni.labels)
 	
 
 			data = [];
-			for(i = 0;  i < rawData.uni[dataType].length; i++){
-				if(hideMissings == true && rawData.uni.missings[i]){
+			for(i = 0;  i < rData.uni[dataType].length; i++){
+				if(hideMissings == true && rData.uni.missings[i]){
 					continue;
 				}
 				
-				tmp = [rawData.uni.labels[i], rawData.uni[dataType][i]];
+				tmp = [rData.uni.labels[i], rData.uni[dataType][i]];
 				data.push(tmp);	
 			}
 
 
-			var w =600;
-			var h = 100 + 20 * data.length;
+			var margin = {top: 20, right: 10, bottom: 40, left: 100};
+		
+			var w = 600 - margin.left - margin.right;
+			var h = (100 + 20 * data.length) - margin.top - margin.bottom;
+			
 			padding = 100;
 			barPadding = 1;
 			
 			var svg = d3.select('#chart')
 						.append('svg')
-						.attr('width', w)
-						.attr('height', h)
-						.attr('class', 'chart');
+						.attr('width', w + margin.left + margin.right)
+						.attr('height', h + margin.top + margin.bottom )
+						.attr('class', 'chart')
+						.append('g')
+						.attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
 										
 						
 			rects = svg.selectAll('rect')
@@ -79,12 +80,12 @@
 							return typeof value === 'number';
 							}));
 						})])
-						.range([0, w - padding]);
+						.range([0, w]);
 						
 		// Y-Skala
 		var yScale = d3.scale.ordinal()
 						.domain(data.map(function(d){return d[0]}))
-						.rangeRoundBands([h - padding, 0]);
+						.rangeRoundBands([h, 0]);
 					
 
 						
@@ -102,25 +103,20 @@
 		svg.append('g')
 			.call(xAxis)
 			.attr('class', 'axis')
-			.attr('transform', 'translate(' + padding + ',' + (h-padding)+')');			
+			.attr('transform', 'translate(0,' + h + ')');			
 			
 		svg.append('g')
 			.call(yAxis)
-			.attr('class', 'axis')
-			.attr('transform', 'translate(' + padding + ',0)');			
+			.attr('class', 'axis');		
 		
 		
 		rects.attr('x', 0) 
 			 .attr('y', function(d) {return yScale(d[0])})
 			 .attr('width', function(d){return xScale(d[1])}) 
-			 .attr('height', ((h -padding) / data.length) - barPadding)
-			 .attr('transform', 'translate(' + padding + ',0)');			
+			 .attr('height', (h / data.length) - barPadding);		
 
 
-		barHeight = ((h -padding) / data.length) - barPadding;
+		barHeight = (h / data.length) - barPadding;
 		text.attr('x', function(d) { return xScale(d[1])-3})
-			.attr('y', function(d) {return yScale(d[0]) + (barHeight/2)} )
-			.attr('transform', 'translate(' + padding + ',0)');
-            
+			.attr('y', function(d) {return yScale(d[0]) + (barHeight/2)});  
         }
-//}

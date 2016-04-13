@@ -1,64 +1,9 @@
-function density_bi(options){
+function density_bi(options, menu2_active){
     
         d3.selectAll('.chart').remove();
 
-        var data  = [];
-		var labels = [];
-  
-        
-        var rawData = {
-            "study":"soep-test",
-            "dataset":"test1",
-            "variable":"age",
-            "label":"Alter",
-            "scale":"num",
-            "uni":{
-                "density":[12,123,321,214,100],
-                "weighted":[14,121,221,314,100],
-                "min":20,
-                "max":100,
-                "by":20,
-                "missings":{
-                    "frequencies":[100,200],
-                    "weighted":[110,190],
-                    "labels":["trifft nicht zu", "keine Antwort"],
-                    "values":[-2,-1]
-                }
-            },
-            "bi":{
-                "sex":{
-                    "label":"Geschlecht",
-                    "categories":{
-                        "0":{
-                            "label":"Mann",
-                            "density":[7,123,321,214,100],
-                            "weighted":[9,121,221,314,100],
-                            "missings":{
-                                "frequencies":[50,50],
-                                "weighted":[55,45],
-                                "labels":["trifft nicht zu", "keine Antwort"],
-                                "values":[-2,-1]
-                            }
-                        },
-                        "1":{
-                            "label":"Frau",
-                            "density":[12,123,321,214,100],
-                            "weighted":[12,73,221,314,150],
-                            "missings":{
-                                "frequencies":[50,150],
-                                "weighted":[55,145],
-                                "labels":["trifft nicht zu", "keine Antwort"],
-                                "values":[-2,-1]
-                            }
-                        }
-                    },
-                    "min":20,
-                    "max":100,
-                    "by":20
-                }
-            }
-        }
-       
+		var rData = JSON.parse(JSON.stringify(rawData))
+		
         if(options.weights == true){
 			dataType = 'weighted'
 		}
@@ -66,12 +11,14 @@ function density_bi(options){
 			dataType = 'density'
 		}
         
-				
-	for(i in rawData.bi[menu2_active].categories){
-		id = rawData.bi[menu2_active].categories[i].label;
+		var data  = [];
+		var labels = [];
+		
+	for(i in rData.bi[menu2_active].categories){
+		id = rData.bi[menu2_active].categories[i].label;
 				
 		// Gewichtet oder nicht
-		freqs = rawData.bi[menu2_active].categories[i][dataType];
+		freqs = rData.bi[menu2_active].categories[i][dataType];
 			
 		// Missings oder nicht
 		//freqs.unshift(id);
@@ -80,8 +27,8 @@ function density_bi(options){
 				
 	}
 	
-		var range = d3.range(rawData.uni.min, rawData.uni.max + 1, rawData.uni.by);
-		var margin = {top: 30, right: 0, bottom: 30, left: 100};
+		var range = d3.range(rData.uni.min, rData.uni.max + 1, rData.uni.by);
+		var margin = {top: 20, right: 0, bottom: 30, left: 100};
 		
 		var w =600 - margin.left - margin.right;
 		var h = 300 - margin.top - margin.bottom;
@@ -109,18 +56,31 @@ function density_bi(options){
             
 		var yAxis = d3.svg.axis()
 			.scale(yScale)
-			.orient('left');	
+			.orient('left');
+
+		var gAxis = svg.append("g")
+			.attr('class', 'axis')
+			.call(yAxis);
+			
+	
+		var maxLabelWidth = 0;
+		gAxis.selectAll("text").each(function () {
+			var width = this.getBBox().width;
+			if (width > maxLabelWidth){
+				maxLabelWidth = width;
+			} 
+		});
 	
 		var yAxisLabel = svg.append('text')
-							.attr('transform', 'translate(' + (65 - margin.left) + ',' + (h/2) + ')rotate(-90)')
-							.attr('class', 'labels')
-							.attr('text-anchor', 'start')
-							.text(rawData.label);
-                            
-        var yAxisLabel2 = svg.append('text')
-							.attr('transform', 'translate(' + (65 - margin.left) + ',' + (-margin.top/2) + ')')
+							.attr('transform', 'translate(' + (-maxLabelWidth-15) + ',' + (h/2) + ')rotate(-90)')
 							.attr('class', 'labels')
 							.attr('text-anchor', 'middle')
+							.text(rData.label);
+                            
+        var yAxisLabel2 = svg.append('text')
+							.attr('transform', 'translate(0' + ',' + (-margin.top/2) + ')')
+							.attr('class', 'labels')
+							.attr('text-anchor', 'end')
 							.text("Valid cases");                    
 		
 		svg.append('g')
@@ -136,7 +96,7 @@ function density_bi(options){
 		for(i = 0; i < data.length; i++){
 		
 		var xScale2 = d3.scale.ordinal()
-						.domain(d3.range(rawData.uni.min, rawData.uni.max + 1, rawData.uni.by))
+						.domain(d3.range(rData.uni.min, rData.uni.max + 1, rData.uni.by))
 						.rangeRoundBands([0, h], 0, 0.5);
 						
 						
@@ -165,17 +125,20 @@ function density_bi(options){
 
 	/*****************************************************************/
 
+	
    var tip = d3.select('body').append('tip')	
 						.attr('class', 'tooltip')				
 						.style('opacity', 0);
                         
 	if(options.percent == true){
 		offset = 'expand';
-		format = d3.format('%');
+		format = d3.format('0.1%')
+		format_axis = d3.format('%');
 	}
 	else{
 		offset = '';
-		format = d3.format('s');
+		format = d3.format('')
+		format_axis = d3.format('');
 	}
 	if(options.weights == true){
 		dataType_missings = 'weighted'
@@ -187,11 +150,11 @@ function density_bi(options){
     	
 	
 	var data  = [];	
-	for(i in rawData.bi[menu2_active].categories){
-		id = rawData.bi[menu2_active].categories[i].label;
+	for(i in rData.bi[menu2_active].categories){
+		id = rData.bi[menu2_active].categories[i].label;
 		
 		// Gewichtet oder nicht
-		freqs = rawData.bi[menu2_active].categories[i].missings[dataType_missings];
+		freqs = rData.bi[menu2_active].categories[i].missings[dataType_missings];
         			
 		freqs.unshift(id);
 		data.push(freqs);
@@ -203,10 +166,10 @@ function density_bi(options){
     
     function checkLabels(){
         
-        for(i = 0; i < rawData.bi[menu2_active].categories[i].missings[dataType_missings].length; i++){
+        for(i = 0; i < rData.bi[menu2_active].categories[i].missings[dataType_missings].length; i++){
         
-        labels_i = rawData.bi[menu2_active].categories[i].missings.labels;
-        labels_ii =  rawData.bi[menu2_active].categories[++i].missings.labels;
+        labels_i = rData.bi[menu2_active].categories[i].missings.labels;
+        labels_ii =  rData.bi[menu2_active].categories[++i].missings.labels;
         
         if(labels_i.length !== labels_i.length){
             return false;
@@ -223,7 +186,7 @@ function density_bi(options){
     var labels; 
     
     if(labels_identical){
-        labels = rawData.bi[menu2_active].categories[0].missings.labels;
+        labels = rData.bi[menu2_active].categories[0].missings.labels;
     }
     else{
         console.log("Error. Unhandled Problem with missing labels (not identical).")
@@ -274,16 +237,17 @@ function density_bi(options){
 		var yAxis = d3.svg.axis()
 						.scale(yScale)
                         .ticks(3)
-						.tickFormat(format)
+						.tickFormat(format_axis)
 						.orient('left');	
 
+		/**				
         var yAxisLabel = svg2.append('text')
 							.attr("transform", "rotate(-90)")
-                            .attr("y", 65 - margin.left)
+                            .attr("y", 0)
                             .attr("x", 0 - (h2 / 2))
 							.attr('class', 'labels')
 							.attr('text-anchor', 'middle')
-							.text("Missings");
+							.text("Missings");**/
 		
 		
 		svg2.append('g')
@@ -317,7 +281,7 @@ function density_bi(options){
 			.on('mouseover', function(d) {		
 				tip.transition()			
 					.style('opacity', .9);		
-				tip.html('<strong>' +d.label + '</strong>: ' + d3.format('.2f')(d.y))	
+				tip.html('<strong>' +d.label + ': </strong>' + format(d.y))	
 					.style('left', (d3.event.pageX) + 'px')		
 					.style('top', (d3.event.pageY) + 'px');	
             })					
@@ -327,9 +291,10 @@ function density_bi(options){
 			});
         
         var yAxisLabel3 = svg2.append('text')
-							.attr('transform', 'translate(' + (65 - margin.left) + ',' + (-margin.top/2) + ')')
+							.attr('transform', 'translate(0' + ',' + (-margin.top/2) + ')')
 							.attr('class', 'labels')
-							.attr('text-anchor', 'middle')
+							.attr('text-anchor', 'end')
 							.text("Invalid cases");
-            
+						
 };
+

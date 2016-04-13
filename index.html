@@ -22,78 +22,37 @@
 		<div id='chart'></div>
         <div id="chart_missings"></div>
 		
-
 		<script>
-        
-            // Load Data (use d3.json() later)
-            var rawData = {
-                "study":"soep-test",
-                "dataset":"test1",
-                "variable":"age",
-                "label":"Alter",
-                "scale":"num",
-                "uni":{
-                    "density":[12,123,321,214,100],
-                    "weighted":[14,121,221,314,100],
-                    "min":20,
-                    "max":100,
-                    "by":20,
-                    "missings":{
-                        "frequencies":[100,200],
-                        "weighted":[110,190],
-                        "labels":["trifft nicht zu", "keine Antwort"],
-                        "values":[-2,-1]
-                    }
-                },
-                "bi":{
-                    "sex":{
-                        "label":"Geschlecht",
-                        "categories":{
-                            "0":{
-                                "label":"Mann",
-                                "density":[7,123,321,214,100],
-                                "weighted":[9,121,221,314,100],
-                                "missings":{
-                                    "frequencies":[50,50],
-                                    "weighted":[55,45],
-                                    "labels":["trifft nicht zu", "keine Antwort"],
-                                    "values":[-2,-1]
-                                }
-                            },
-                            "1":{
-                                "label":"Frau",
-                                "density":[12,123,321,214,100],
-                                "weighted":[12,73,221,314,150],
-                                "missings":{
-                                    "frequencies":[50,150],
-                                    "weighted":[55,145],
-                                    "labels":["trifft nicht zu", "keine Antwort"],
-                                    "values":[-2,-1]
-                                }
-                            }
-                        },
-                        "min":20,
-                        "max":100,
-                        "by":20
-                    }
-                }
-            }
-
-            
+		
+			/** Data **/
 			
-			// Define the menu
+			// Set path to data, read data from json-file
+			var path = "./testdata/age.json";
+		
+			var rawData;
+            d3.json(path, function(json) {
+				rawData = json;
+				
+			
+			
+			
+			/** Menu **/
+			
 			var h = 40;
+			
+			// Name menu items
 			var menu2_data = ['age', 'sex', 'sample', 'wave'];
 			var menu3_data = ['percent', 'missings', 'weights'];
 		
+			// Control active options in menu 3
 			var options = {
-				'missings': 	false,
-				'percent':		false,
-				'weights':		false,
+				'missings': 	false, // hide missings
+				'percent':		false, // show in percentages
+				'weights':		false, // use weighted data
 			}
+			
+			// Control active item in menu 2 (show var by age, sex, sample or wave)
 			var menu2_active = 'none';
-			var menu3_active;
-			var circle_filled = false;
 			
             // Default chart: univariate categories / density chart
             if(rawData.scale == "cat" ){
@@ -105,6 +64,9 @@
             else{
                 console.log("Error. Not defined.")
             }
+			
+			var menu3_active;
+			var circle_filled = false;
 			
             // Append SVG Element to DOM
 			function svg(w, h, selector){
@@ -124,9 +86,9 @@
 			}
 			
             // Menu divided in 3 parts: 
-            // menu1: var-name
-            // menu2: cross var with age, sex ... (bivariate)
-            // menu3: options -- show in percentages, hide missings, weighted
+            // Menu 1: var-name
+            // Menu 2: show var by age, sex, sample or wave (bivariate)
+            // Menu 3: hide missings, show in percentages, use weighted data
 			var menu1_svg = svg(100, h, '#menu');
 			var menu2_svg = svg(250, h, '#menu');
 			var menu3_svg = svg(250, h, '#menu');
@@ -134,51 +96,51 @@
 			var menu2_scale = scale(menu2_data, 10, 250);
 			var menu3_scale = scale(menu3_data, 65, 250);			
 									
-            // menu1: on click, reset all options and show default chart
+            // menu 1: on click reset all options and show default chart
 			menu1_svg.append('text')
-						.text(rawData.variable)
-						.attr('x', 90)
-						.attr('y', h / 2)
-						.attr('class', 'menu1_text')
-						.on('click', function(){
+				.text(rawData.variable)
+				.attr('x', 90)
+				.attr('y', h / 2)
+				.attr('class', 'menu1_text')
+				.on('click', function(){
 							
-							d3.selectAll('.menu2_circles').attr('fill', 'white').attr('stroke', 'steelblue');
-							d3.selectAll('.menu3_rects').attr('fill', 'white').attr('stroke', 'grey');
-							options = {
-								'missings': 	false,
-								'percent':		false,
-								'weights':		false,
-							}	
-							 if(rawData.scale == "cat" ){
-                                cat_uni(options);
-                            }
-                            if(rawData.scale == "num"){
-                                density(options);
-                            }
-							menu2_active = 'none';
-						});
+					d3.selectAll('.menu2_circles').attr('fill', 'white').attr('stroke', 'steelblue');
+					d3.selectAll('.menu3_rects').attr('fill', 'white').attr('stroke', 'grey');
+					options = {
+						'missings': 	false,
+						'percent':		false,
+						'weights':		false,
+					}	
+					 if(rawData.scale == "cat" ){
+						cat_uni(options);
+					}
+					if(rawData.scale == "num"){
+						density(options);
+					}
+					menu2_active = 'none';
+				});
 		
-            // Append elements of menu2 (bivariate charts)
+            // Menu 2
 			var menu2 = menu2_svg.selectAll('g')
-							.data(menu2_data)
-							.enter()
-							.append('g');
+				.data(menu2_data)
+				.enter()
+				.append('g');
 			
     
 			menu2.append('circle')
-					.attr('cx', function(d){ return menu2_scale(d)})
-					.attr('cy', 16)
-					.attr('r', 5)
-					.attr("fill", "white")
-					.attr("stroke", "grey")
-					.attr("stroke-width", 1)
-					.attr('class', 'menu2_circles');
+				.attr('cx', function(d){ return menu2_scale(d)})
+				.attr('cy', 16)
+				.attr('r', 5)
+				.attr("fill", "white")
+				.attr("stroke", "grey")
+				.attr("stroke-width", 1)
+				.attr('class', 'menu2_circles');
 					
 			menu2.append('text')
-					.attr('x', function(d){return menu2_scale(d) + 10})
-					.attr('y', h / 2)
-					.text(function(d){ return d; })
-					.attr('class', 'menu2_text');					
+				.attr('x', function(d){return menu2_scale(d) + 10})
+				.attr('y', h / 2)
+				.text(function(d){ return d; })
+				.attr('class', 'menu2_text');					
 							
                                
 			menu2.on('click', function(d){
@@ -190,7 +152,7 @@
                         draw_biCatChart();
                     }
                     if(rawData.scale == "num"){
-                       density_bi(options); 
+                       density_bi(options, menu2_active); 
                     }		
 				}
 				catch(error) {
@@ -211,31 +173,31 @@
 				};	
 			});	
 			
-            // Append elements of menu3 (options for univariate and bivariate charts)
+            // Menu 3
 			var menu3 = menu3_svg.selectAll('g')
-							.data(menu3_data)
-							.enter()
-							.append('g');
+				.data(menu3_data)
+				.enter()
+				.append('g');
 		
 			menu3.append('rect')
-					.attr('x', function(d){return menu3_scale(d)})
-					.attr('y', 12)
-					.attr('height', 9)
-					.attr('width', 9)
-					.attr("fill", "white")
-					.attr("stroke", "steelblue")
-					.attr("stroke-width", 1)
-					.attr('class', 'menu3_rects');	
+				.attr('x', function(d){return menu3_scale(d)})
+				.attr('y', 12)
+				.attr('height', 9)
+				.attr('width', 9)
+				.attr("fill", "white")
+				.attr("stroke", "steelblue")
+				.attr("stroke-width", 1)
+				.attr('class', 'menu3_rects');	
 			menu3.append('text')
-					.attr('x', function(d){return menu3_scale(d) + 14})
-					.attr('y', h / 2)
-					.text(function(d){ return d})
-					.attr('text-anchor', 'left')
-					.attr('font-weight', '')
-					.attr('fill', 'grey')
-					.attr('font-family', 'sans-serif')
-					.attr('font-size', '11px');
-					
+				.attr('x', function(d){return menu3_scale(d) + 14})
+				.attr('y', h / 2)
+				.text(function(d){ return d})
+				.attr('text-anchor', 'left')
+				.attr('font-weight', '')
+				.attr('fill', 'grey')
+				.attr('font-family', 'sans-serif')
+				.attr('font-size', '11px');
+				
 			menu3.on('click', function(d){
 								
 				if(options[d] == false){
@@ -254,7 +216,7 @@
                             draw_biCatChart();
                         }
                         if(rawData.scale == "num"){
-                            density_bi(options);
+                            density_bi(options, menu2_active);
                         }
 					}
 					d3.select(this).select('rect').attr('fill', 'steelblue')	
@@ -275,13 +237,15 @@
                         draw_biCatChart();
                     }
                     if(rawData.scale == "num"){
-                        density_bi(options);
+                        density_bi(options, menu2_active);
                     }
 						
 					}
 					d3.select(this).select('rect').attr('fill', 'white')
 				}
-			});		
+			});
+			
+			});
 			
 		</script>
 		</body>
