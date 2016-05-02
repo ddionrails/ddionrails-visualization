@@ -27,15 +27,12 @@
 			/** Data **/
 			
 			// Set path to data, read data from json-file
-			var path = "./testdata/age.json";
+			var path = "./testdata/edu.json";
 		
 			var rawData;
             d3.json(path, function(json) {
 				rawData = json;
 				
-			
-			
-			
 			/** Menu **/
 			
 			var h = 40;
@@ -104,7 +101,7 @@
 				.attr('class', 'menu1_text')
 				.on('click', function(){
 							
-					d3.selectAll('.menu2_circles').attr('fill', 'white').attr('stroke', 'steelblue');
+					d3.selectAll('.menu2_circles').attr('fill', 'white').attr('stroke', 'grey');
 					d3.selectAll('.menu3_rects').attr('fill', 'white').attr('stroke', 'grey');
 					options = {
 						'missings': 	false,
@@ -157,7 +154,15 @@
 				}
 				catch(error) {
 					d3.selectAll('.chart').remove();
-					d3.select('#chart').append('p').text('Not available.').attr('class', 'chart');
+					d3.select('#chart')
+						.append('svg')
+						.attr('width', 600)
+						.attr('height', 300)
+						.attr('class', 'chart')
+						.append('text')
+						.text('Sorry.Not available.')
+						.attr('x', 300)
+						.attr('y', 100) ;
 				};
 				
 		
@@ -185,7 +190,7 @@
 				.attr('height', 9)
 				.attr('width', 9)
 				.attr("fill", "white")
-				.attr("stroke", "steelblue")
+				.attr("stroke", "grey")
 				.attr("stroke-width", 1)
 				.attr('class', 'menu3_rects');	
 			menu3.append('text')
@@ -219,7 +224,7 @@
                             density_bi(options, menu2_active);
                         }
 					}
-					d3.select(this).select('rect').attr('fill', 'steelblue')	
+					d3.select(this).select('rect').attr('fill', 'steelblue').attr('stroke', 'steelblue');	
 				}
 				else{
 					options[d] = false;

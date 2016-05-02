@@ -1,6 +1,7 @@
 function density_bi(options, menu2_active){
     
         d3.selectAll('.chart').remove();
+		d3.select('.chart_missings').remove();
 
 		var rData = JSON.parse(JSON.stringify(rawData))
 		
@@ -10,6 +11,7 @@ function density_bi(options, menu2_active){
 		else{
 			dataType = 'density'
 		}
+        
         
 		var data  = [];
 		var labels = [];
@@ -125,6 +127,7 @@ function density_bi(options, menu2_active){
 
 	/*****************************************************************/
 
+	if(options.missings == false){
 	
    var tip = d3.select('body').append('tip')	
 						.attr('class', 'tooltip')				
@@ -214,7 +217,7 @@ function density_bi(options, menu2_active){
 						.append('svg')
 						.attr('width', w2 + margin.left + margin.right)
 						.attr('height', h2 + margin.top + margin.bottom)
-						.attr('class', 'chart')
+						.attr('class', 'chart_missings')
                         .append('g')
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
        
@@ -295,6 +298,9 @@ function density_bi(options, menu2_active){
 							.attr('class', 'labels')
 							.attr('text-anchor', 'end')
 							.text("Invalid cases");
-						
+	}
+	 if(options.missings == true){
+		   d3.select('.chart_missings').remove();
+	   }
 };
 

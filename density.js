@@ -1,6 +1,7 @@
 function density(options){
     
     d3.selectAll('.chart').remove();
+	d3.select('.chart_missings').remove();
     
     
 		var rData = JSON.parse(JSON.stringify(rawData))
@@ -18,6 +19,7 @@ function density(options){
 		else{
 			dataType_missings = 'frequencies'
 		}
+		
 		
         
         var data = [];
@@ -104,7 +106,7 @@ function density(options){
 		var path = d3.svg.line()
 					 .x(function(d) {return xScale(d[0])})
 					 .y(function (d) {return yScale(d[1])})
-					 .interpolate('cardinal');
+					 .interpolate('monotone');
 					 
 		svg.append('path')
 			.attr('class', 'line')
@@ -152,7 +154,8 @@ function density(options){
                 
        /*****************************************************/ 
        
-       
+       if(options.missings == false){
+		
         var rData = rawData;
 
         data = [];
@@ -171,7 +174,7 @@ function density(options){
 						.append('svg')
 						.attr('width', w + margin.left + margin.right)
 						.attr('height', h + margin.top + margin.bottom)
-						.attr('class', 'chart')
+						.attr('class', 'chart_missings')
                         .append('g')
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
 						
@@ -246,5 +249,8 @@ function density(options){
 							.attr('class', 'labels')
 							.attr('text-anchor', 'end')
 							.text("Invalid cases");
-        
+	   }   
+	   if(options.missings == true){
+		   d3.select('.chart_missings').remove();
+	   }
 }

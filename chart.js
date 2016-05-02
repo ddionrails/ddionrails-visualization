@@ -8,8 +8,10 @@ function organizeData(options, menu2_active){
 	
 	var rData = JSON.parse(JSON.stringify(rawData))
 				
-	colors = d3.scale.category20();
-	colors.domain(rData.bi[menu2_active].labels)
+	colors = d3.scale.category20()
+		.domain(rData.bi[menu2_active].labels);
+
+
 
   
 	if(options.missings == true){

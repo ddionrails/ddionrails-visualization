@@ -19,9 +19,14 @@
 				dataType = 'frequencies'
 			}
 			
+			/**
+			colors = d3.scale.ordinal()
+				.domain(rData.uni.labels)
+				.range(colors_blue);
+			**/
+			
 			colors = d3.scale.category20();
             colors.domain(rData.uni.labels)
-	
 
 			data = [];
 			for(i = 0;  i < rData.uni[dataType].length; i++){
@@ -32,7 +37,6 @@
 				tmp = [rData.uni.labels[i], rData.uni[dataType][i]];
 				data.push(tmp);	
 			}
-
 
 			var margin = {top: 20, right: 10, bottom: 40, left: 100};
 		
@@ -49,14 +53,16 @@
 						.attr('class', 'chart')
 						.append('g')
 						.attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
-										
-						
+			
+			
 			rects = svg.selectAll('rect')
 					.data(data)
 					.enter()
 					.append('rect')
                     .style('fill', function(d){ return colors(d[0]); })
 					.attr('class', 'rects');
+
+			
 			
 			text = svg.selectAll('text')
 					.data(data)
@@ -64,15 +70,15 @@
 					.append('text')
 					.attr('class', 'text');
 	
-
-		if(options.percent == true){
-			var sum =  d3.sum(data.map(function(d){return d[1] }));
-			format = d3.format('0.1%');
-			text.text(function(d) {return format(d[1] / sum)}) 					
-		}
-		else{
-			text.text(function(d) {return (d[1])})	
-		}			
+			if(options.percent == true){
+				var sum =  d3.sum(data.map(function(d){return d[1] }));
+				format = d3.format('0.1%');
+				text.text(function(d) {return format(d[1] / sum)}) 					
+			}
+			else {
+				text.text(function(d) {return (d[1])})	
+			}			
+			
 
 		var xScale = d3.scale.linear()
 						.domain([0, d3.max(data, function(d) {
@@ -113,10 +119,14 @@
 		rects.attr('x', 0) 
 			 .attr('y', function(d) {return yScale(d[0])})
 			 .attr('width', function(d){return xScale(d[1])}) 
-			 .attr('height', (h / data.length) - barPadding);		
-
+			 .attr('height', (h / data.length) - barPadding);			
 
 		barHeight = (h / data.length) - barPadding;
+	     
 		text.attr('x', function(d) { return xScale(d[1])-3})
-			.attr('y', function(d) {return yScale(d[0]) + (barHeight/2)});  
+			.attr('y', function(d) {return yScale(d[0]) + (barHeight/2)});
+			
+		
+
+		
         }
