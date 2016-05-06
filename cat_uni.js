@@ -38,7 +38,7 @@
 				data.push(tmp);	
 			}
 
-			var margin = {top: 20, right: 10, bottom: 40, left: 100};
+			var margin = {top: 20, right: 20, bottom: 40, left: 100};
 		
 			var w = 600 - margin.left - margin.right;
 			var h = (100 + 20 * data.length) - margin.top - margin.bottom;
@@ -122,11 +122,14 @@
 			 .attr('height', (h / data.length) - barPadding);			
 
 		barHeight = (h / data.length) - barPadding;
+        
 	     
-		text.attr('x', function(d) { return xScale(d[1])-3})
-			.attr('y', function(d) {return yScale(d[0]) + (barHeight/2)});
+		text.attr('x', function(d) {return xScale(d[1]) + 3})
+			.attr('y', function(d) {return yScale(d[0]) + (barHeight/2) + 2});
 			
 		
 
 		
         }
+        
+

@@ -1,10 +1,10 @@
 
 
 .text {
-  fill: white;
+  fill: grey;
   font-size: 11px;
   font-family: sans-serif;
-  text-anchor: end;
+  text-anchor: start;
 }
 
 .text_stacked {
