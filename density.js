@@ -86,17 +86,20 @@ function density(options){
 		
         var rData = rawData;
 
-        data = [];
+        dataMissings = [];
         for(i = 0;  i < rData.uni.missings[dataType_missings].length; i++){
             
             tmp = [rData.uni.missings.values[i], rData.uni.missings.labels[i], rData.uni.missings[dataType_missings][i]];
-            data.push(tmp);	
+            dataMissings.push(tmp);	
         }
+        
+        sumValidData =  d3.sum(data.map(function(d){return d[1] }));
+        dataMissings.push([" ", "valid cases", sumValidData])
 
 		
         var colors = ["#d9d9d9", "#737373"];
 		var w = 600 - margin.left - margin.right;
-		var h = (80 + 10 * data.length) - margin.top - margin.bottom;
+		var h = (80 + 10 * dataMissings.length) - margin.top - margin.bottom;
 		
 		var svg2 = d3.select('#chart_missings')
 						.append('svg')
@@ -107,29 +110,31 @@ function density(options){
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
 						
        rects = svg2.selectAll('rect')
-					.data(data)
+					.data(dataMissings)
 					.enter()
 					.append('rect')
                     .style('fill', function(d, i){ return colors[i]; })
 					.attr('class', 'rects');
 			
 		text = svg2.selectAll('text')
-					.data(data)
+					.data(dataMissings)
 					.enter()
 					.append('text')
 					.attr('class', 'text');
 	
-
+        sumAllData = sumValidData + d3.sum(rData.uni.missings[dataType_missings]);
+        
 		if(options.percent == true){
 			format = d3.format('0.1%');
-			text.text(function(d) {return format(d[2] / sum)}) 					
+			text.text(function(d) {return format(d[2] / sumAllData)}) 					
 		}
 		else{
-			text.text(function(d) {return (d[2])})	
+			text.text(function(d) {return (d[2])});	
 		}			
 
+        
 		var xScale = d3.scale.linear()
-						.domain([0, d3.max(data, function(d) {
+						.domain([0, d3.max(dataMissings, function(d) {
 							return d3.max(d.filter(function(value) {
 							return typeof value === 'number';
 							}));
@@ -138,7 +143,7 @@ function density(options){
 						
 		// Y-Skala
 		var yScale = d3.scale.ordinal()
-			.domain(data.map(function(d){return ("[" + d[0] + "] " + d[1]) }))
+			.domain(dataMissings.map(function(d){return ("[" + d[0] + "] " + d[1]) }))
 			.rangeRoundBands([h, 0]);
 				
 					
@@ -165,10 +170,10 @@ function density(options){
 		rects.attr('x', 0) 
 			 .attr('y', function(d) {return yScale("[" + d[0] + "] " + d[1])})
 			 .attr('width', function(d){ return xScale(d[2])}) 
-			 .attr('height', (h / data.length) - 1);		
+			 .attr('height', (h / dataMissings.length) - 1);		
 
 
-		barHeight = (h / data.length) - 1;
+		barHeight = (h / dataMissings.length) - 1;
 		text.attr('x', function(d) { return xScale(d[2])+ 3})
 			.attr('y', function(d) {return yScale("[" + d[0] + "] " + d[1]) + (barHeight/2)+2});
             

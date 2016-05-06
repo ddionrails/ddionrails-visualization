@@ -151,13 +151,16 @@ function density_bi(options, menu2_active){
 		id = rData.bi[menu2_active].categories[i].label;
 		
 		// Gewichtet oder nicht
+        sumValidCases = d3.sum(rData.bi[menu2_active].categories[i][dataType]);
 		freqs = rData.bi[menu2_active].categories[i].missings[dataType_missings];
+        
         			
 		freqs.unshift(id);
+        freqs.push(sumValidCases);
 		data.push(freqs);
 			
 	}
-
+        sumValidData =  d3.sum(data);
 
     // Check if missings of categories are identical
     
@@ -184,6 +187,7 @@ function density_bi(options, menu2_active){
     
     if(labels_identical){
         labels = rData.bi[menu2_active].categories[0].missings.labels;
+        labels.push("valid cases");
     }
     else{
         console.log("Error. Unhandled Problem with missing labels (not identical).")
@@ -191,6 +195,7 @@ function density_bi(options, menu2_active){
     
             
             var values = rData.bi[menu2_active].categories[0].missings.values;
+            values.push(" ");
 			
             var mapped = labels.map(function(dat,i){
                 return data.map(function(d){
@@ -239,17 +244,7 @@ function density_bi(options, menu2_active){
                         .ticks(3)
 						.tickFormat(format_axis)
 						.orient('left');	
-
-		/**				
-        var yAxisLabel = svg2.append('text')
-							.attr("transform", "rotate(-90)")
-                            .attr("y", 0)
-                            .attr("x", 0 - (h2 / 2))
-							.attr('class', 'labels')
-							.attr('text-anchor', 'middle')
-							.text("Missings");**/
-		
-		
+                        
 		svg2.append('g')
 			.call(xAxis)
 			.attr('class', 'axis')
