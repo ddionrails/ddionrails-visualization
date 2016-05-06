@@ -194,10 +194,13 @@ function density_bi(options, menu2_active){
     else{
         console.log("Error. Unhandled Problem with missing labels (not identical).")
     }
+    
+            
+            var values = rData.bi[menu2_active].categories[0].missings.values;
 			
             var mapped = labels.map(function(dat,i){
                 return data.map(function(d){
-                    return {x: d[0], y: d[i+1], label: dat};
+                    return {x: d[0], y: d[i+1], label: dat, code: values[i]};
                 })
             });
 			
@@ -284,7 +287,7 @@ function density_bi(options, menu2_active){
 			.on('mouseover', function(d) {		
 				tip.transition()			
 					.style('opacity', .9);		
-				tip.html('<strong>' +d.label + ': </strong>' + format(d.y))	
+				tip.html('<strong>' + "[" + d.code + "] " + d.label + ': </strong>' + format(d.y))	
 					.style('left', (d3.event.pageX) + 'px')		
 					.style('top', (d3.event.pageY) + 'px');	
             })					

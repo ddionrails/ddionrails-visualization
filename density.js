@@ -34,7 +34,7 @@ function density(options){
        
 
 
-		var margin = {top: 20, right: 10, bottom: 40, left: 100};
+		var margin = {top: 20, right: 40, bottom: 40, left: 100};
 		
 		var w =600 - margin.left - margin.right;
 		var h = 300 - margin.top - margin.bottom;
@@ -161,7 +161,7 @@ function density(options){
         data = [];
         for(i = 0;  i < rData.uni.missings[dataType_missings].length; i++){
             
-            tmp = [rData.uni.missings.labels[i], rData.uni.missings[dataType_missings][i]];
+            tmp = [rData.uni.missings.values[i], rData.uni.missings.labels[i], rData.uni.missings[dataType_missings][i]];
             data.push(tmp);	
         }
 
@@ -194,10 +194,10 @@ function density(options){
 
 		if(options.percent == true){
 			format = d3.format('0.1%');
-			text.text(function(d) {return format(d[1] / sum)}) 					
+			text.text(function(d) {return format(d[2] / sum)}) 					
 		}
 		else{
-			text.text(function(d) {return (d[1])})	
+			text.text(function(d) {return (d[2])})	
 		}			
 
 		var xScale = d3.scale.linear()
@@ -210,7 +210,7 @@ function density(options){
 						
 		// Y-Skala
 		var yScale = d3.scale.ordinal()
-			.domain(data.map(function(d){return d[0]}))
+			.domain(data.map(function(d){return ("[" + d[0] + "] " + d[1]) }))
 			.rangeRoundBands([h, 0]);
 				
 					
@@ -235,14 +235,14 @@ function density(options){
 		
 		
 		rects.attr('x', 0) 
-			 .attr('y', function(d) {return yScale(d[0])})
-			 .attr('width', function(d){ return xScale(d[1])}) 
+			 .attr('y', function(d) {return yScale("[" + d[0] + "] " + d[1])})
+			 .attr('width', function(d){ return xScale(d[2])}) 
 			 .attr('height', (h / data.length) - 1);		
 
 
 		barHeight = (h / data.length) - 1;
-		text.attr('x', function(d) { return xScale(d[1])-3})
-			.attr('y', function(d) {return yScale(d[0]) + (barHeight/2)+3});
+		text.attr('x', function(d) { return xScale(d[2])+ 3})
+			.attr('y', function(d) {return yScale("[" + d[0] + "] " + d[1]) + (barHeight/2)+2});
             
         var yAxisLabel3 = svg2.append('text')
 							.attr('transform', 'translate(0' + ',' + (-margin.top/2) + ')')

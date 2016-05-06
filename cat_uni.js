@@ -34,11 +34,11 @@
 					continue;
 				}
 				
-				tmp = [rData.uni.labels[i], rData.uni[dataType][i]];
+				tmp = [rData.uni.values[i], rData.uni.labels[i], rData.uni[dataType][i]];
 				data.push(tmp);	
 			}
 
-			var margin = {top: 20, right: 20, bottom: 40, left: 100};
+			var margin = {top: 20, right: 40, bottom: 40, left: 100};
 		
 			var w = 600 - margin.left - margin.right;
 			var h = (100 + 20 * data.length) - margin.top - margin.bottom;
@@ -59,7 +59,7 @@
 					.data(data)
 					.enter()
 					.append('rect')
-                    .style('fill', function(d){ return colors(d[0]); })
+                    .style('fill', function(d){ return colors(d[1]); })
 					.attr('class', 'rects');
 
 			
@@ -71,12 +71,12 @@
 					.attr('class', 'text');
 	
 			if(options.percent == true){
-				var sum =  d3.sum(data.map(function(d){return d[1] }));
+				var sum =  d3.sum(data.map(function(d){return d[2] }));
 				format = d3.format('0.1%');
-				text.text(function(d) {return format(d[1] / sum)}) 					
+				text.text(function(d) {return format(d[2] / sum)}) 					
 			}
 			else {
-				text.text(function(d) {return (d[1])})	
+				text.text(function(d) {return (d[2])})	
 			}			
 			
 
@@ -90,7 +90,7 @@
 						
 		// Y-Skala
 		var yScale = d3.scale.ordinal()
-						.domain(data.map(function(d){return d[0]}))
+						.domain(data.map(function(d){return ("[" + d[0] + "] " + d[1])}))
 						.rangeRoundBands([h, 0]);
 					
 
@@ -117,15 +117,15 @@
 		
 		
 		rects.attr('x', 0) 
-			 .attr('y', function(d) {return yScale(d[0])})
-			 .attr('width', function(d){return xScale(d[1])}) 
+			 .attr('y', function(d) {return yScale("[" + d[0] + "] " + d[1])})
+			 .attr('width', function(d){return xScale(d[2])}) 
 			 .attr('height', (h / data.length) - barPadding);			
 
 		barHeight = (h / data.length) - barPadding;
         
 	     
-		text.attr('x', function(d) {return xScale(d[1]) + 3})
-			.attr('y', function(d) {return yScale(d[0]) + (barHeight/2) + 2});
+		text.attr('x', function(d) {return xScale(d[2]) + 3})
+			.attr('y', function(d) {return yScale("[" + d[0] + "] " + d[1]) + (barHeight/2) + 2});
 			
 		
 

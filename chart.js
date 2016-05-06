@@ -4,9 +4,11 @@ var colors;
 var format; 
 var format_axis;
 
+
 function organizeData(options, menu2_active){
 	
-	var rData = JSON.parse(JSON.stringify(rawData))
+
+	rData = JSON.parse(JSON.stringify(rawData))
 				
 	colors = d3.scale.category20()
 		.domain(rData.bi[menu2_active].labels);
@@ -45,24 +47,27 @@ function organizeData(options, menu2_active){
 			indices.unshift(i);
 		}
 	}
-				
+	
+    
 	for(i in rData.bi[menu2_active].categories){
-		id = rData.bi[menu2_active].categories[i].label;
-				
-		// Gewichtet oder nicht
-		var freqs = rData.bi[menu2_active].categories[i][dataType];
-			
-		// Missings oder nicht
-		if(hideMissings == true){
-			for(i in indices){
-				freqs.splice(indices[i], 1);
-			}
-		}
 
-		freqs.unshift(id);
-		data.push(freqs);
-				
+            id = rData.bi[menu2_active].categories[i].label;
+                    
+            // Gewichtet oder nicht
+            var freqs = rData.bi[menu2_active].categories[i][dataType];
+                
+            // Missings oder nicht
+            if(hideMissings == true){
+                for(i in indices){
+                    freqs.splice(indices[i], 1);
+                }
+            }
+
+            freqs.unshift(id);
+            data.push(freqs);
+        
 	}
+    
 		
 	var labels = rData.bi[menu2_active].labels;
 			if(hideMissings == true){
@@ -71,10 +76,13 @@ function organizeData(options, menu2_active){
 				}
 			};
 			
+            var values = rData.bi[menu2_active].values;
+            
             var mapped = labels.map(function(dat,i){
                 return data.map(function(d){
-                    return {x: d[0], y: d[i+1], label: dat};
-                })
+                        return {x: d[0], y: d[i+1], label: dat, code: values[i]};
+            
+                });
             });
 			
 			// normalized or not
@@ -163,11 +171,11 @@ function draw_biCatChart(){
             .attr('height', function(d) {return yScale(d.y0) - yScale(d.y + d.y0)})
             .attr('width', xScale.rangeBand())
 			.attr('class', 'rect')
-			.on('mouseover', function(d) {
+			.on('mouseover', function(d, i) {
 			
 				tip.transition()			
 					.style('opacity', .9);		
-				tip.html('<strong>' + d.label + ':</strong> ' + format(d.y))	
+				tip.html('<strong>' + "[" + d.code + "] " +  d.label + ':</strong> ' + format(d.y))	
 					.style('left', (d3.event.pageX) + 'px')		
 					.style('top', (d3.event.pageY) + 'px');	
             })					
