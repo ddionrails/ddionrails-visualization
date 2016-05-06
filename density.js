@@ -61,48 +61,13 @@ function density(options){
 		var xAxis = d3.svg.axis()
 			.scale(xScale)
 			.orient('bottom');
-		
-		
-		var yAxis = d3.svg.axis()
-			.scale(yScale)
-			.orient('left');
-		
-	
-		var gAxis = svg.append("g")
-			.attr('class', 'axis')
-			.call(yAxis);
-			
-	
-		var maxLabelWidth = 0;
-		gAxis.selectAll("text").each(function () {
-			var width = this.getBBox().width;
-			if (width > maxLabelWidth){
-				maxLabelWidth = width;
-			} 
-		});
-		
-	
-		var yAxisLabel = svg.append('text')
-							.attr('transform', 'translate(' + (-maxLabelWidth-15) + ',' + h/2 + ')rotate(-90)')
-							.attr('class', 'labels')
-							.attr('text-anchor', 'middle')
-							.text(rData.label);
-        
-        var yAxisLabel2 = svg.append('text')
-							.attr('transform', 'translate(0' + ',' + (-margin.top/2) + ')')
-							.attr('class', 'labels')
-							.attr('text-anchor', 'end')
-							.text("Valid cases");
+
 		
 		svg.append('g')
 			.call(xAxis)
 			.attr('class', 'axis')
 			.attr('transform', 'translate(0,' + h + ')')			
 	
-		svg.append('g')
-			.call(yAxis)
-			.attr('class', 'axis');
-		
 		var path = d3.svg.line()
 					 .x(function(d) {return xScale(d[0])})
 					 .y(function (d) {return yScale(d[1])})
@@ -113,44 +78,7 @@ function density(options){
 			.attr('d', path(data));	
 		
 		
-		var points = svg.append('g');
-		
-		points.selectAll('circle')
-					.data(data)
-					.enter()
-					.append('circle')
-					.attr('cx', function(d) { return xScale(d[0]); })
-					.attr('cy', function(d) { return yScale(d[1]); })
-					.attr('r', 3)
-					.style('fill', 'steelblue');
-
-					
-		var labels = svg.append('g')
-						.attr('class', 'labels');
-
-		labels.selectAll('text')
-				.data(data)
-				.enter()
-				.append('text')
-				.attr('x', function(d) { return xScale(d[0]); })
-				.attr('y', function(d) { return yScale(d[1]); })
-				.attr('dy', -10)
-				.attr('text-anchor', 'middle')
-                .text(function(d){
-                    
-                    if(options.percent == true){
-                        sum =  d3.sum(data.map(function(d){return d[1] })) + d3.sum(rData.uni.missings[dataType_missings]);
-                        format = d3.format('0.1%');
-                        return format(d[1] / sum) 					
-                    }
-                    else {
-                       return d[1]	
-                    }    
-                });
-                
-        
-		
-         
+	
                 
        /*****************************************************/ 
        
@@ -244,11 +172,7 @@ function density(options){
 		text.attr('x', function(d) { return xScale(d[2])+ 3})
 			.attr('y', function(d) {return yScale("[" + d[0] + "] " + d[1]) + (barHeight/2)+2});
             
-        var yAxisLabel3 = svg2.append('text')
-							.attr('transform', 'translate(0' + ',' + (-margin.top/2) + ')')
-							.attr('class', 'labels')
-							.attr('text-anchor', 'end')
-							.text("Invalid cases");
+     
 	   }   
 	   if(options.missings == true){
 		   d3.select('.chart_missings').remove();

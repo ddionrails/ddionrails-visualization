@@ -78,13 +78,7 @@ function density_bi(options, menu2_active){
 							.attr('class', 'labels')
 							.attr('text-anchor', 'middle')
 							.text(rData.label);
-                            
-        var yAxisLabel2 = svg.append('text')
-							.attr('transform', 'translate(0' + ',' + (-margin.top/2) + ')')
-							.attr('class', 'labels')
-							.attr('text-anchor', 'end')
-							.text("Valid cases");                    
-		
+
 		svg.append('g')
 			.call(xAxis)
 			.attr('class', 'axis')
@@ -296,11 +290,7 @@ function density_bi(options, menu2_active){
 					.style('opacity', 0);	
 			});
         
-        var yAxisLabel3 = svg2.append('text')
-							.attr('transform', 'translate(0' + ',' + (-margin.top/2) + ')')
-							.attr('class', 'labels')
-							.attr('text-anchor', 'end')
-							.text("Invalid cases");
+
 	}
 	 if(options.missings == true){
 		   d3.select('.chart_missings').remove();
