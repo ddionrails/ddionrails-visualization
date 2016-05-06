@@ -104,7 +104,7 @@ function density_bi(options, menu2_active){
 					 .x(function(d, i) { return xScale2(range[i])})
 					 .y(function (d) {return yScale2(d)})
                      .y0(function (d) {return yScale2(-d)})
-					 .interpolate('cardinal');
+					 .interpolate('linear');
 					 
                      
 				 

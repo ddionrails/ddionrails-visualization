@@ -71,7 +71,7 @@ function density(options){
 		var path = d3.svg.line()
 					 .x(function(d) {return xScale(d[0])})
 					 .y(function (d) {return yScale(d[1])})
-					 .interpolate('monotone');
+					 .interpolate('linear');
 					 
 		svg.append('path')
 			.attr('class', 'line')
