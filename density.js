@@ -36,7 +36,7 @@ function density(options){
 
 		var margin = {top: 20, right: 40, bottom: 40, left: 100};
 		
-		var w =600 - margin.left - margin.right;
+		var w = 600 - margin.left - margin.right;
 		var h = 300 - margin.top - margin.bottom;
 	
 		
@@ -95,9 +95,10 @@ function density(options){
         
         sumValidData =  d3.sum(data.map(function(d){return d[1] }));
         dataMissings.push([" ", "valid cases", sumValidData])
+       
 
 		
-        var colors = ["#d9d9d9", "#737373"];
+        var colors = ['#d9d9d9','#969696', '#000000', '#ffffff','#f0f0f0','#bdbdbd','#525252', '#737373','#252525'];
 		var w = 600 - margin.left - margin.right;
 		var h = (80 + 10 * dataMissings.length) - margin.top - margin.bottom;
 		
@@ -113,7 +114,13 @@ function density(options){
 					.data(dataMissings)
 					.enter()
 					.append('rect')
-                    .style('fill', function(d, i){ return colors[i]; })
+                    .style('fill', function(d, i){
+                        if(d[1] == "valid cases"){
+                            return 'steelblue';
+                        } else{
+                            return colors[i];
+                        }
+                     })
 					.attr('class', 'rects');
 			
 		text = svg2.selectAll('text')

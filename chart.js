@@ -133,11 +133,7 @@ function draw_biCatChart(){
 						.tickFormat(format_axis)
 						.orient('left');		
 
-		var yAxisLabel2 = svg.append('text')
-							.attr('transform', 'translate(0'  + ',' + (-margin.top/2) + ')')
-							.attr('class', 'labels')
-							.attr('text-anchor', 'end')
-							.text("cases");                    
+	               
 		
 		svg.append('g')
 			.call(xAxis)

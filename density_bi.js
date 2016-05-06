@@ -205,15 +205,16 @@ function density_bi(options, menu2_active){
 			
 			// normalized or not
 			var stacked = d3.layout.stack().offset(offset)(mapped);
-        
+  
         
         var barPadding = 0.2;
 		var barOutPadding = 0.1;     
            
-        var colors = ["#d9d9d9", "#737373"];
-     
+        var colors = ['#d9d9d9','#969696', '#000000', '#ffffff','#f0f0f0','#bdbdbd','#525252', '#737373','#252525'];
+        
+   
 		var w2 = 600 - margin.left - margin.right;
-		var h2 = 100 - margin.top - margin.bottom;
+		var h2 = 150 - margin.top - margin.bottom;
 		
 		var svg2 = d3.select('#chart_missings')
 						.append('svg')
@@ -290,5 +291,6 @@ function density_bi(options, menu2_active){
 	 if(options.missings == true){
 		   d3.select('.chart_missings').remove();
 	   }
+       
 };
 
