@@ -98,7 +98,7 @@ function density(options){
        
 
 		
-        var colors = ['#d9d9d9','#969696', '#000000', '#ffffff','#f0f0f0','#bdbdbd','#525252', '#737373','#252525'];
+        var colors = ['#d9d9d9','#969696', '#000000', '#ffffff','#f0f0f0','#bdbdbd','#525252', '#737373','#252525', '#d9d9d9','#969696', '#000000', '#ffffff','#f0f0f0','#bdbdbd','#525252', '#737373','#252525'];
 		var w = 600 - margin.left - margin.right;
 		var h = (80 + 10 * dataMissings.length) - margin.top - margin.bottom;
 		

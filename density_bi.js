@@ -210,7 +210,7 @@ function density_bi(options, menu2_active){
         var barPadding = 0.2;
 		var barOutPadding = 0.1;     
            
-        var colors = ['#d9d9d9','#969696', '#000000', '#ffffff','#f0f0f0','#bdbdbd','#525252', '#737373','#252525'];
+        var colors = ['#d9d9d9','#969696', '#000000', '#ffffff','#f0f0f0','#bdbdbd','#525252', '#737373','#252525', '#d9d9d9','#969696', '#000000', '#ffffff','#f0f0f0','#bdbdbd','#525252', '#737373','#252525'];
         
    
 		var w2 = 600 - margin.left - margin.right;
