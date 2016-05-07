@@ -7,11 +7,7 @@
 		<!-- D3.js -->
 		<script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>  
 		
-		<script src='./chart.js'></script>
-		<script src='./cat_uni.js'></script>
-        <script src='./density.js'></script>
-        <script src='./density_bi.js'></script>
-		<!--<script src='./testdata/edu.json'></script>-->
+		<script src="./scripts/render.js"></script>
 		<link rel='stylesheet' href='./style.css' />
                 
     </head>
@@ -24,231 +20,16 @@
 		
 		<script>
 		
-			/** Data **/
-			
 			// Set path to data, read data from json-file
-			var path = "./testdata/edu.json";
+			var path = "./testdata/age.json";
 		
 			var rawData;
             d3.json(path, function(json) {
 				rawData = json;
+                
+                render(rawData);
 				
-			/** Menu **/
 			
-			var h = 40;
-			
-			// Name menu items
-			var menu2_data = ['age', 'sex', 'sample', 'wave'];
-			var menu3_data = ['percent', 'missings', 'weights'];
-		
-			// Control active options in menu 3
-			var options = {
-				'missings': 	false, // hide missings
-				'percent':		false, // show in percentages
-				'weights':		false, // use weighted data
-			}
-			
-			// Control active item in menu 2 (show var by age, sex, sample or wave)
-			var menu2_active = 'none';
-			
-            // Default chart: univariate categories / density chart
-            if(rawData.scale == "cat" ){
-                cat_uni(options);
-            }
-            else if(rawData.scale == "num"){
-                density(options);
-            }
-            else{
-                console.log("Error. Not defined.")
-            }
-			
-			var menu3_active;
-			var circle_filled = false;
-			
-            // Append SVG Element to DOM
-			function svg(w, h, selector){
-				var svg = d3.select(selector)
-							.append('svg')
-							.attr('width', w)
-							.attr('height', h);
-				return svg;
-			}
-			
-            // Set Scales for charts
-			function scale(domain, rangeMin, rangeMax){
-				var scale = d3.scale.ordinal()
-								.domain(domain)
-								.rangeBands([rangeMin, rangeMax]);
-				return scale;
-			}
-			
-            // Menu divided in 3 parts: 
-            // Menu 1: var-name
-            // Menu 2: show var by age, sex, sample or wave (bivariate)
-            // Menu 3: hide missings, show in percentages, use weighted data
-			var menu1_svg = svg(100, h, '#menu');
-			var menu2_svg = svg(250, h, '#menu');
-			var menu3_svg = svg(250, h, '#menu');
-					
-			var menu2_scale = scale(menu2_data, 10, 250);
-			var menu3_scale = scale(menu3_data, 65, 250);			
-									
-            // menu 1: on click reset all options and show default chart
-			menu1_svg.append('text')
-				.text(rawData.variable)
-				.attr('x', 90)
-				.attr('y', h / 2)
-				.attr('class', 'menu1_text')
-				.on('click', function(){
-							
-					d3.selectAll('.menu2_circles').attr('fill', 'white').attr('stroke', 'grey');
-					d3.selectAll('.menu3_rects').attr('fill', 'white').attr('stroke', 'grey');
-					options = {
-						'missings': 	false,
-						'percent':		false,
-						'weights':		false,
-					}	
-					 if(rawData.scale == "cat" ){
-						cat_uni(options);
-					}
-					if(rawData.scale == "num"){
-						density(options);
-					}
-					menu2_active = 'none';
-				});
-		
-            // Menu 2
-			var menu2 = menu2_svg.selectAll('g')
-				.data(menu2_data)
-				.enter()
-				.append('g');
-			
-    
-			menu2.append('circle')
-				.attr('cx', function(d){ return menu2_scale(d)})
-				.attr('cy', 16)
-				.attr('r', 5)
-				.attr("fill", "white")
-				.attr("stroke", "grey")
-				.attr("stroke-width", 1)
-				.attr('class', 'menu2_circles');
-					
-			menu2.append('text')
-				.attr('x', function(d){return menu2_scale(d) + 10})
-				.attr('y', h / 2)
-				.text(function(d){ return d; })
-				.attr('class', 'menu2_text');					
-							
-                               
-			menu2.on('click', function(d){
-				menu2_active = d;
-				
-				try {
-                    if(rawData.scale == "cat" ){
-                        organizeData(options, menu2_active);
-                        draw_biCatChart();
-                    }
-                    if(rawData.scale == "num"){
-                       density_bi(options, menu2_active); 
-                    }		
-				}
-				catch(error) {
-					d3.selectAll('.chart').remove();
-					d3.select('#chart')
-						.append('svg')
-						.attr('width', 600)
-						.attr('height', 300)
-						.attr('class', 'chart')
-						.append('text')
-						.text('Sorry.Not available.')
-						.attr('x', 300)
-						.attr('y', 100) ;
-				};
-				
-		
-				if(circle_filled == false) {
-					d3.selectAll('circle').attr('fill', 'white').attr('stroke', 'grey')
-					d3.select(this).select('circle').attr('fill', 'steelblue').attr('stroke', 'steelblue')
-					circle_filled = true;
-				}
-				else {
-					d3.selectAll('circle').attr('fill', 'white').attr('stroke', 'grey')
-					d3.select(this).select('circle').attr('fill', 'steelblue').attr('stroke', 'steelblue')
-					circle_filled = false;
-				};	
-			});	
-			
-            // Menu 3
-			var menu3 = menu3_svg.selectAll('g')
-				.data(menu3_data)
-				.enter()
-				.append('g');
-		
-			menu3.append('rect')
-				.attr('x', function(d){return menu3_scale(d)})
-				.attr('y', 12)
-				.attr('height', 9)
-				.attr('width', 9)
-				.attr("fill", "white")
-				.attr("stroke", "grey")
-				.attr("stroke-width", 1)
-				.attr('class', 'menu3_rects');	
-			menu3.append('text')
-				.attr('x', function(d){return menu3_scale(d) + 14})
-				.attr('y', h / 2)
-				.text(function(d){ return d})
-				.attr('text-anchor', 'left')
-				.attr('font-weight', '')
-				.attr('fill', 'grey')
-				.attr('font-family', 'sans-serif')
-				.attr('font-size', '11px');
-				
-			menu3.on('click', function(d){
-								
-				if(options[d] == false){
-					options[d] = true;
-					if(menu2_active == 'none' ){
-                        if(rawData.scale == "cat" ){
-                            cat_uni(options);
-                        }
-                        if(rawData.scale == "num"){
-                            density(options);
-                        }
-                    }
-					else{
-						 if(rawData.scale == "cat" ){
-                            organizeData(options, menu2_active);
-                            draw_biCatChart();
-                        }
-                        if(rawData.scale == "num"){
-                            density_bi(options, menu2_active);
-                        }
-					}
-					d3.select(this).select('rect').attr('fill', 'steelblue').attr('stroke', 'steelblue');	
-				}
-				else{
-					options[d] = false;
-					if(menu2_active == 'none' ){
-						 if(rawData.scale == "cat" ){
-                            cat_uni(options);
-                        }
-                        if(rawData.scale == "num"){
-                            density(options);
-                        }
-					}
-					else{
-                    if(rawData.scale == "cat" ){
-                        organizeData(options, menu2_active);
-                        draw_biCatChart();
-                    }
-                    if(rawData.scale == "num"){
-                        density_bi(options, menu2_active);
-                    }
-						
-					}
-					d3.select(this).select('rect').attr('fill', 'white')
-				}
-			});
 			
 			});
 			
