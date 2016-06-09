@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Visualization</title>
+       <meta charset="utf-8">
+		
+		<!-- D3.js -->
+		<script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>  
+		
+		<script src="./scripts/render.js"></script>
+		<link rel='stylesheet' href='./style.css' />
+                
+    </head>
+	
+    <body>
+	
+		<div id='menu'></div>
+		<div id='chart'></div>
+        <div id="chart_missings"></div>
+		
+		<script>
+		
+			// Set path to data, read data from json-file
+			var path = "./testdata/age.json";
+		
+			var rawData;
+            d3.json(path, function(json) {
+				rawData = json;
+                
+                render(rawData);
+				
+			
+			
+			});
+			
+		</script>
+		</body>
+</html>
