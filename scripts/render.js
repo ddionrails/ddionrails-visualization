@@ -585,7 +585,7 @@ function render(rawData){
         // X-Scale
 		var xScale = d3.scale.ordinal()
             .domain(range)
-            .rangeRoundBands([0, w], 0, 0.5);
+            .rangePoints([0, w], 0.5);
 		
         // Y-Scale
 		var yScale = d3.scale.linear()
@@ -731,7 +731,7 @@ function render(rawData){
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // UNIVARIATE DENSITY CHART
+    // BIVARIATE DENSITY CHART
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     function density_bi(options, menu2_active){
@@ -971,7 +971,12 @@ function render(rawData){
                 .enter()
                 .append('g')
                 .attr('class', 'layer')
-                .style('fill', function(d, i){return colors[i]});
+                .style('fill', function(d, i){
+                    if(d[0].label == 'valid cases'){
+                        return 'steelblue';
+                    } else {
+                        return colors[i];
+                }});
           
             var rect = layer.selectAll('rect')
                 .data(function(d){return d})
