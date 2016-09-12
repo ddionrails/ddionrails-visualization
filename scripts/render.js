@@ -1,228 +1,234 @@
 function render(rawData){
     
-	startRendering();
-			
-    function startRendering(){
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Menu
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    // Set margin, width, padding for charts and menu
+    // Height of chart later set by number of data elements
+    var margin = {top: 2, right: 20, bottom: 40, left: 200};
+    var w = 750 - margin.left - margin.right;
+    var h_menu = 40;
+    var barPadding = 1;
+    
+    // Create Array of available options from data modell
+    var menu2_data = [];
+    for(i in rawData.bi){
+        menu2_data.push(i);
+    }
+    
+    // Control active option in menu 2, defaul is 'none', circles are not filled
+    var menu2_active = 'none';
+    var circle_filled = false;
+    
+    // Add option 'weighted' to menu 3 if available in data modell
+    var menu3_data = ['percent', 'missings'];
+    if('weighted' in rawData.uni){
+        menu3_data.push('weighted');
+    }
+    
+    // Control active options in menu 3
+    var options = {
+        'missings': 	false, // hide missings
+        'percent':		false, // show in percentages
+        'weighted':		false, // use weighted data
+    }
+    var menu3_active;
+    
+    // Choose diagram type by scale
+    if(rawData.scale == "cat" ){
+        cat_uni(options);
+    }
+    else if(rawData.scale == "num"){
+        density(options);
+    }
+    else{
+        console.log("Error. Not defined.")
+    }
+    
+    // Append SVG Element to DOM
+    function svg(w, h, selector){
+        var svg = d3.select(selector)
+                    .append('svg')
+                    .attr('width', w)
+                    .attr('height', h);
+        return svg;
+    }
+    
+    // Set Scales for charts
+    function scale(domain, rangeMin, rangeMax){
+        var scale = d3.scale.ordinal()
+                        .domain(domain)
+                        .rangeBands([rangeMin, rangeMax]);
+        return scale;
+    }
+    
+    // Menu divided in 3 parts: 
+    // Menu 1: var-name
+    // Menu 2: show var by available options (bivariate)
+    // Menu 3: hide missings, show in percentages, use weighted data
+    var menu1_svg = svg(margin.left, h_menu, '#menu');
+    var menu2_svg = svg(250, h_menu, '#menu');
+    var menu3_svg = svg(250, h_menu, '#menu');
+            
+    var menu2_scale = scale(menu2_data, 10, 250);
+    var menu3_scale = scale(menu3_data, 65, 250);			
+    
+    
+    // // Menu 1: on click reset all options and show default chart
+    // menu1_svg.append('text')
+        // .text(rawData.variable)
+        // .attr('x', 90)
+        // .attr('y', h_menu / 2)
+        // .attr('class', 'menu1_text')
+        // .on('click', function(){
+                    
+            // d3.selectAll('.menu2_circles').attr('fill', 'white').attr('stroke', 'grey');
+            // d3.selectAll('.menu3_rects').attr('fill', 'white').attr('stroke', 'grey');
+            // options = {
+                // 'missings': 	false,
+                // 'percent':		false,
+                // 'weighted':		false,
+            // }	
+             // if(rawData.scale == "cat" ){
+                // cat_uni(options);
+            // }
+            // if(rawData.scale == "num"){
+                // density(options);
+            // }
+            // menu2_active = 'none';
+        // });
 
-        var h = 40;
+    // Append menu elements (text, circles, behaviour) to menu 2
+    var menu2 = menu2_svg.selectAll('g')
+        .data(menu2_data)
+        .enter()
+        .append('g');
+    
+
+    menu2.append('circle')
+        .attr('cx', function(d){ return menu2_scale(d)})
+        .attr('cy', 16)
+        .attr('r', 5)
+        .attr("fill", "white")
+        .attr("stroke", "grey")
+        .attr("stroke-width", 1)
+        .attr('class', 'menu2_circles');
+            
+    menu2.append('text')
+        .attr('x', function(d){return menu2_scale(d) + 10})
+        .attr('y', h_menu / 2)
+        .text(function(d){ return d; })
+        .attr('class', 'menu2_text');					
+                    
+                       
+    menu2.on('click', function(d){
+        menu2_active = d;
         
-        // Create Array of available options from data modell
-        var menu2_data = [];
-        for(i in rawData.bi){
-            menu2_data.push(i);
+        try {
+            if(rawData.scale == "cat" ){
+                draw_biCatChart(options, menu2_active);
+            }
+            if(rawData.scale == "num"){
+               density_bi(options, menu2_active); 
+            }		
         }
+        catch(error) {
+            d3.selectAll('.chart').remove();
+            d3.select('#chart')
+                .append('svg')
+                .attr('width', w)
+                .attr('height', 300)
+                .attr('class', 'chart')
+                .append('text')
+                .text('Sorry.Not available.')
+                .attr('x', 300)
+                .attr('y', 100) ;
+        };
         
-        // Control active option in menu 2, defaul is 'none', circles are not filled
-        var menu2_active = 'none';
-        var circle_filled = false;
-        
-        // Add option 'weighted' to menu 3 if available in data modell
-        var menu3_data = ['percent', 'missings'];
-        if('weighted' in rawData.uni){
-            menu3_data.push('weighted');
+
+        if(circle_filled == false) {
+            d3.selectAll('circle').attr('fill', 'white').attr('stroke', 'grey')
+            d3.select(this).select('circle').attr('fill', 'steelblue').attr('stroke', 'steelblue')
+            circle_filled = true;
         }
+        else {
+            d3.selectAll('circle').attr('fill', 'white').attr('stroke', 'grey')
+            d3.select(this).select('circle').attr('fill', 'white').attr('stroke', 'steelblue')
+            circle_filled = false;
+        };	
+    });	
+    
+    // Append menu elements (text, circles, behaviour) to menu 3
+    var menu3 = menu3_svg.selectAll('g')
+        .data(menu3_data)
+        .enter()
+        .append('g');
+
+    menu3.append('rect')
+        .attr('x', function(d){return menu3_scale(d)})
+        .attr('y', 12)
+        .attr('height', 9)
+        .attr('width', 9)
+        .attr("fill", "white")
+        .attr("stroke", "grey")
+        .attr("stroke-width", 1)
+        .attr('class', 'menu3_rects');	
+    menu3.append('text')
+        .attr('x', function(d){return menu3_scale(d) + 14})
+        .attr('y', h_menu / 2)
+        .text(function(d){ return d})
+        .attr('text-anchor', 'left')
+        .attr('font-weight', '')
+        .attr('fill', 'grey')
+        .attr('font-family', 'sans-serif')
+        .attr('font-size', '11px');
         
-        // Control active options in menu 3
-        var options = {
-            'missings': 	false, // hide missings
-            'percent':		false, // show in percentages
-            'weighted':		false, // use weighted data
-        }
-        var menu3_active;
-        
-        // Choose diagram type by scale
-        if(rawData.scale == "cat" ){
-            cat_uni(options);
-        }
-        else if(rawData.scale == "num"){
-            density(options);
+    menu3.on('click', function(d){
+                        
+        if(options[d] == false){
+            options[d] = true;
+            if(menu2_active == 'none' ){
+                if(rawData.scale == "cat" ){
+                    cat_uni(options);
+                }
+                if(rawData.scale == "num"){
+                    density(options);
+                }
+            }
+            else{
+                 if(rawData.scale == "cat" ){
+                    draw_biCatChart(options, menu2_active);
+                }
+                if(rawData.scale == "num"){
+                    density_bi(options, menu2_active);
+                }
+            }
+            d3.select(this).select('rect').attr('fill', 'steelblue').attr('stroke', 'steelblue');	
         }
         else{
-            console.log("Error. Not defined.")
-        }
-        
-        // Append SVG Element to DOM
-        function svg(w, h, selector){
-            var svg = d3.select(selector)
-                        .append('svg')
-                        .attr('width', w)
-                        .attr('height', h);
-            return svg;
-        }
-        
-        // Set Scales for charts
-        function scale(domain, rangeMin, rangeMax){
-            var scale = d3.scale.ordinal()
-                            .domain(domain)
-                            .rangeBands([rangeMin, rangeMax]);
-            return scale;
-        }
-        
-        // Menu divided in 3 parts: 
-        // Menu 1: var-name
-        // Menu 2: show var by available options (bivariate)
-        // Menu 3: hide missings, show in percentages, use weighted data
-        var menu1_svg = svg(100, h, '#menu');
-        var menu2_svg = svg(250, h, '#menu');
-        var menu3_svg = svg(250, h, '#menu');
-                
-        var menu2_scale = scale(menu2_data, 10, 250);
-        var menu3_scale = scale(menu3_data, 65, 250);			
-                                
-        // Menu 1: on click reset all options and show default chart
-        menu1_svg.append('text')
-            .text(rawData.variable)
-            .attr('x', 90)
-            .attr('y', h / 2)
-            .attr('class', 'menu1_text')
-            .on('click', function(){
-                        
-                d3.selectAll('.menu2_circles').attr('fill', 'white').attr('stroke', 'grey');
-                d3.selectAll('.menu3_rects').attr('fill', 'white').attr('stroke', 'grey');
-                options = {
-                    'missings': 	false,
-                    'percent':		false,
-                    'weighted':		false,
-                }	
+            options[d] = false;
+            if(menu2_active == 'none' ){
                  if(rawData.scale == "cat" ){
                     cat_uni(options);
                 }
                 if(rawData.scale == "num"){
                     density(options);
                 }
-                menu2_active = 'none';
-            });
-
-        // Append menu elements (text, circles, behaviour) to menu 2
-        var menu2 = menu2_svg.selectAll('g')
-            .data(menu2_data)
-            .enter()
-            .append('g');
-        
-
-        menu2.append('circle')
-            .attr('cx', function(d){ return menu2_scale(d)})
-            .attr('cy', 16)
-            .attr('r', 5)
-            .attr("fill", "white")
-            .attr("stroke", "grey")
-            .attr("stroke-width", 1)
-            .attr('class', 'menu2_circles');
-                
-        menu2.append('text')
-            .attr('x', function(d){return menu2_scale(d) + 10})
-            .attr('y', h / 2)
-            .text(function(d){ return d; })
-            .attr('class', 'menu2_text');					
-                        
-                           
-        menu2.on('click', function(d){
-            menu2_active = d;
-            
-            try {
-                if(rawData.scale == "cat" ){
-                    draw_biCatChart(options, menu2_active);
-                }
-                if(rawData.scale == "num"){
-                   density_bi(options, menu2_active); 
-                }		
-            }
-            catch(error) {
-                d3.selectAll('.chart').remove();
-                d3.select('#chart')
-                    .append('svg')
-                    .attr('width', 600)
-                    .attr('height', 300)
-                    .attr('class', 'chart')
-                    .append('text')
-                    .text('Sorry.Not available.')
-                    .attr('x', 300)
-                    .attr('y', 100) ;
-            };
-            
-
-            if(circle_filled == false) {
-                d3.selectAll('circle').attr('fill', 'white').attr('stroke', 'grey')
-                d3.select(this).select('circle').attr('fill', 'steelblue').attr('stroke', 'steelblue')
-                circle_filled = true;
-            }
-            else {
-                d3.selectAll('circle').attr('fill', 'white').attr('stroke', 'grey')
-                d3.select(this).select('circle').attr('fill', 'steelblue').attr('stroke', 'steelblue')
-                circle_filled = false;
-            };	
-        });	
-        
-        // Append menu elements (text, circles, behaviour) to menu 3
-        var menu3 = menu3_svg.selectAll('g')
-            .data(menu3_data)
-            .enter()
-            .append('g');
-
-        menu3.append('rect')
-            .attr('x', function(d){return menu3_scale(d)})
-            .attr('y', 12)
-            .attr('height', 9)
-            .attr('width', 9)
-            .attr("fill", "white")
-            .attr("stroke", "grey")
-            .attr("stroke-width", 1)
-            .attr('class', 'menu3_rects');	
-        menu3.append('text')
-            .attr('x', function(d){return menu3_scale(d) + 14})
-            .attr('y', h / 2)
-            .text(function(d){ return d})
-            .attr('text-anchor', 'left')
-            .attr('font-weight', '')
-            .attr('fill', 'grey')
-            .attr('font-family', 'sans-serif')
-            .attr('font-size', '11px');
-            
-        menu3.on('click', function(d){
-                            
-            if(options[d] == false){
-                options[d] = true;
-                if(menu2_active == 'none' ){
-                    if(rawData.scale == "cat" ){
-                        cat_uni(options);
-                    }
-                    if(rawData.scale == "num"){
-                        density(options);
-                    }
-                }
-                else{
-                     if(rawData.scale == "cat" ){
-                        draw_biCatChart(options, menu2_active);
-                    }
-                    if(rawData.scale == "num"){
-                        density_bi(options, menu2_active);
-                    }
-                }
-                d3.select(this).select('rect').attr('fill', 'steelblue').attr('stroke', 'steelblue');	
             }
             else{
-                options[d] = false;
-                if(menu2_active == 'none' ){
-                     if(rawData.scale == "cat" ){
-                        cat_uni(options);
-                    }
-                    if(rawData.scale == "num"){
-                        density(options);
-                    }
-                }
-                else{
-                if(rawData.scale == "cat" ){
-                    draw_biCatChart(options, menu2_active);
-                }
-                if(rawData.scale == "num"){
-                    density_bi(options, menu2_active);
-                }
-                    
-                }
-                d3.select(this).select('rect').attr('fill', 'white').attr('stroke', 'grey');
+            if(rawData.scale == "cat" ){
+                draw_biCatChart(options, menu2_active);
             }
-        });
-    }
+            if(rawData.scale == "num"){
+                density_bi(options, menu2_active);
+            }
+                
+            }
+            d3.select(this).select('rect').attr('fill', 'white').attr('stroke', 'grey');
+        }
+    });
+
             
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // UNIVARIATE CATEGORY CHART
@@ -258,13 +264,8 @@ function render(rawData){
             tmp = [rData.uni.values[i], rData.uni.labels[i], rData.uni[dataType][i]];
             data.push(tmp);	
         }
-        
-        // Set margin, width, height and padding for chart
-        var margin = {top: 20, right: 40, bottom: 40, left: 100};
-        var w = 600 - margin.left - margin.right;
+        // Compute height of chart by number of data elements
         var h = (100 + 20 * data.length) - margin.top - margin.bottom;
-        var padding = 100;
-        var barPadding = 1;
         
         // Create SVG ELement and append to #chart
         var svg = d3.select('#chart')
@@ -447,9 +448,7 @@ function render(rawData){
             .attr('class', 'tooltip')				
             .style('opacity', 0);
 
-        // Set margin, width, height and Padding    
-        var margin = {top: 20, right: 0, bottom: 30, left: 100};
-        var w =600 - margin.left - margin.right;
+        // Set height for chart  
         var h = 300 - margin.top - margin.bottom;
         
         barPadding = 0.2;
@@ -568,9 +567,7 @@ function render(rawData){
             
         })
 
-        // Set margin, width, height and padding for chart
-		var margin = {top: 20, right: 40, bottom: 40, left: 100};
-		var w = 600 - margin.left - margin.right;
+        // Set height for chart
 		var h = 300 - margin.top - margin.bottom;
 	
         // Create SVG ELement and append to #chart 
@@ -630,8 +627,7 @@ function render(rawData){
             sumValidData =  d3.sum(data.map(function(d){return d[1] }));
             dataMissings.push([" ", "valid cases", sumValidData])
            
-            // Set margin, width, height and padding for chart
-            var w = 600 - margin.left - margin.right;
+            // Set height for chart
             var h = (80 + 10 * dataMissings.length) - margin.top - margin.bottom;
             
             // Append SVG-Element for missings chart
@@ -765,9 +761,7 @@ function render(rawData){
                 
         }
     
-        // Set margin, width, height and padding for chart
-        var margin = {top: 20, right: 0, bottom: 30, left: 100};
-        var w =600 - margin.left - margin.right;
+        // Set height for chart
         var h = 300 - margin.top - margin.bottom;
        
         // Append SVG-Element to #chart
