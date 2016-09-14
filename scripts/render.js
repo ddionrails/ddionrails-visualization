@@ -75,31 +75,6 @@ function render(rawData){
             
     var menu2_scale = scale(menu2_data, 10, 250);
     var menu3_scale = scale(menu3_data, 65, 250);			
-    
-    
-    // // Menu 1: on click reset all options and show default chart
-    // menu1_svg.append('text')
-        // .text(rawData.variable)
-        // .attr('x', 90)
-        // .attr('y', h_menu / 2)
-        // .attr('class', 'menu1_text')
-        // .on('click', function(){
-                    
-            // d3.selectAll('.menu2_circles').attr('fill', 'white').attr('stroke', 'grey');
-            // d3.selectAll('.menu3_rects').attr('fill', 'white').attr('stroke', 'grey');
-            // options = {
-                // 'missings': 	false,
-                // 'percent':		false,
-                // 'weighted':		false,
-            // }	
-             // if(rawData.scale == "cat" ){
-                // cat_uni(options);
-            // }
-            // if(rawData.scale == "num"){
-                // density(options);
-            // }
-            // menu2_active = 'none';
-        // });
 
     // Append menu elements (text, circles, behaviour) to menu 2
     var menu2 = menu2_svg.selectAll('g')
@@ -284,8 +259,8 @@ function render(rawData){
         // Create SVG ELement and append to #chart
         var svg = d3.select('#chart')
                     .append('svg')
-                    .attr('width', w + margin.left + margin.right)
-                    .attr('height', h + margin.top + margin.bottom )
+                    .attr('viewBox', '0 0 ' + (w + margin.left + margin.right) + ' ' + (h + margin.top + margin.bottom))
+                    .attr('perserveAspectRatio', 'xMinYMid')
                     .attr('class', 'chart')
                     .append('g')
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
@@ -489,8 +464,8 @@ function render(rawData){
         // Create SVG ELement and append to #chart 
         var svg = d3.select('#chart')
                     .append('svg')
-                    .attr('width', w + margin.left + margin.right)
-                    .attr('height', h + margin.top + margin.bottom)
+                    .attr('viewBox', '0 0 ' + (w + margin.left + margin.right) + ' ' + (h + margin.top + margin.bottom))
+                    .attr('perserveAspectRatio', 'xMinYMid')
                     .attr('class', 'chart')
                     .append('g')
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
@@ -607,13 +582,13 @@ function render(rawData){
 		var h = 300 - margin.top - margin.bottom;
 	
         // Create SVG ELement and append to #chart 
-		var svg = d3.select('#chart')
-            .append('svg')
-            .attr('width', w + margin.left + margin.right)
-            .attr('height', h + margin.top + margin.bottom)
-            .attr('class', 'chart')
-            .append('g')
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
+        var svg = d3.select('#chart')
+                    .append('svg')
+                    .attr('viewBox', '0 0 ' + (w + margin.left + margin.right) + ' ' + (h + margin.top + margin.bottom))
+                    .attr('perserveAspectRatio', 'xMinYMid')
+                    .attr('class', 'chart')
+                    .append('g')
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
 
         // X-Scale
 		var xScale = d3.scale.ordinal()
@@ -669,8 +644,8 @@ function render(rawData){
             // Append SVG-Element for missings chart
             var svg2 = d3.select('#chart_missings')
                             .append('svg')
-                            .attr('width', w + margin.left + margin.right)
-                            .attr('height', h + margin.top + margin.bottom)
+                            .attr('viewBox', '0 0 ' + (w + margin.left + margin.right) + ' ' + (h + margin.top + margin.bottom))
+                            .attr('perserveAspectRatio', 'xMinYMid')
                             .attr('class', 'chart_missings')
                             .append('g')
                             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
@@ -803,8 +778,8 @@ function render(rawData){
         // Append SVG-Element to #chart
         var svg = d3.select('#chart')
                         .append('svg')
-                        .attr('width', w + margin.left + margin.right)
-                        .attr('height', h + margin.top + margin.bottom)
+                        .attr('viewBox', '0 0 ' + (w + margin.left + margin.right) + ' ' + (h + margin.top + margin.bottom))
+                        .attr('perserveAspectRatio', 'xMinYMid')
                         .attr('class', 'chart')
                         .append('g')
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
@@ -951,8 +926,8 @@ function render(rawData){
             // Append SVG Element to #chart_missings
             var svg2 = d3.select('#chart_missings')
                 .append('svg')
-                .attr('width', w + margin.left + margin.right)
-                .attr('height', h2 + margin.top + margin.bottom)
+                .attr('viewBox', '0 0 ' + (w + margin.left + margin.right) + ' ' + (h + margin.top + margin.bottom))
+                .attr('perserveAspectRatio', 'xMinYMid')
                 .attr('class', 'chart_missings')
                 .append('g')
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -1032,4 +1007,19 @@ function render(rawData){
             d3.select('.chart_missings').remove();
         }      
     }      
+}
+
+function resize() {
+    
+    $(window).on("resize", function() {
+                        
+        charts = $(".chart .chart_missings")
+        aspect = charts.width() / charts.height()
+        targetWidth = charts.parent().width();
+        
+        charts.attr("width", targetWidth);
+        charts.attr("height", Math.round(targetWidth / aspect));
+       
+   }).trigger("resize");
+               
 }
