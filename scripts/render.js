@@ -1,16 +1,18 @@
-function render(rawData){
+// Global vars
+
+// Set margin, width, padding for charts and menu
+// Height of chart later set by number of data elements
+var margin = {top: 10, right: 40, bottom: 40, left: 200};
+var w = 750 - margin.left - margin.right;
+var h_menu = 40;
+var barPadding = 1;
+
+function render(rawData){ 
     
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Menu
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    // Set margin, width, padding for charts and menu
-    // Height of chart later set by number of data elements
-    var margin = {top: 10, right: 20, bottom: 40, left: 200};
-    var w = 750 - margin.left - margin.right;
-    var h_menu = 40;
-    var barPadding = 1;
-    
+ 
     // Create Array of available options from data modell
     var menu2_data = [];
     for(i in rawData.bi){
@@ -313,6 +315,7 @@ function render(rawData){
             text.text(function(d) {return format(d[2] / sum)}) 					
         }
         else {
+            format = d3.format('');
             text.text(function(d) {return (d[2])})	
         }			
         
@@ -348,12 +351,34 @@ function render(rawData){
         svg.append('g')
             .call(yAxis)
             .attr('class', 'axis');		
+            
+        // Tooltip: on mouseover show label and values
+        var tip = d3.select('body').append('tip')	
+            .attr('class', 'tooltip')				
+            .style('opacity', 0);   
 
         // Draw bars
         rects.attr('x', 0) 
              .attr('y', function(d) {return yScale("[" + d[0] + "] " + d[1])})
              .attr('width', function(d){return xScale(d[2])}) 
-             .attr('height', (h / data.length) - barPadding);			
+             .attr('height', (h / data.length) - barPadding)
+             .on('mouseover', function(d) {
+                    tip.transition()			
+                        .style('opacity', .9);		
+                    tip.html(function() {
+                        if(options.percent == true){
+                            return '<strong>' + "[" + d[0] + "] " + d[1] + ': </strong>' + format(d[2] / sum)
+                        } else {
+                           return '<strong>' + "[" + d[0] + "] " + d[1] + ': </strong>' + format(d[2])	 
+                        }
+                    });
+                    tip.style('left', (d3.event.pageX) + 'px')		
+                       .style('top', (d3.event.pageY) + 'px');    
+             })					
+                .on('mouseout', function(d) {		
+                    tip.transition()			
+                        .style('opacity', 0);	
+                });
         
         //Append Labels
         barHeight = (h / data.length) - barPadding; 
@@ -455,11 +480,6 @@ function render(rawData){
         // Remove current chart
         d3.selectAll('.chart').remove();
         
-        // Tooltip: on mouseover show label and values
-        var tip = d3.select('body').append('tip')	
-            .attr('class', 'tooltip')				
-            .style('opacity', 0);
-
         // Set height for chart  
         var h = 300 - margin.top - margin.bottom;
         
@@ -517,6 +537,11 @@ function render(rawData){
                     return colors(d[i].label)
                 }
             });	
+            
+        // Tooltip: on mouseover show label and values
+        var tip = d3.select('body').append('tip')	
+            .attr('class', 'tooltip')				
+            .style('opacity', 0);       
     
         var rect = layer.selectAll('rect')
             .data(function(d){return d})
@@ -528,7 +553,6 @@ function render(rawData){
             .attr('width', xScale.rangeBand())
             .attr('class', 'rect')
             .on('mouseover', function(d, i) {
-            
                 tip.transition()			
                     .style('opacity', .9);		
                 tip.html('<strong>' + "[" + d.code + "] " +  d.label + ':</strong> ' + format(d.y))	
@@ -868,9 +892,6 @@ function render(rawData){
 
         if(options.missings == false){
             
-            var tip = d3.select('body').append('tip')	
-                                .attr('class', 'tooltip')				
-                                .style('opacity', 0);
                                 
             if(options.percent == true){
                 offset = 'expand';
