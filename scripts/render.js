@@ -6,7 +6,7 @@ function render(rawData){
     
     // Set margin, width, padding for charts and menu
     // Height of chart later set by number of data elements
-    var margin = {top: 2, right: 20, bottom: 40, left: 200};
+    var margin = {top: 10, right: 20, bottom: 40, left: 200};
     var w = 750 - margin.left - margin.right;
     var h_menu = 40;
     var barPadding = 1;
@@ -121,42 +121,54 @@ function render(rawData){
         .text(function(d){ return d; })
         .attr('class', 'menu2_text');					
                     
-                       
+    menu2_clicked = false;
     menu2.on('click', function(d){
-        menu2_active = d;
-        
-        try {
-            if(rawData.scale == "cat" ){
-                draw_biCatChart(options, menu2_active);
-            }
-            if(rawData.scale == "num"){
-               density_bi(options, menu2_active); 
-            }		
-        }
-        catch(error) {
-            d3.selectAll('.chart').remove();
-            d3.select('#chart')
-                .append('svg')
-                .attr('width', w)
-                .attr('height', 300)
-                .attr('class', 'chart')
-                .append('text')
-                .text('Sorry.Not available.')
-                .attr('x', 300)
-                .attr('y', 100) ;
-        };
-        
-
-        if(circle_filled == false) {
-            d3.selectAll('circle').attr('fill', 'white').attr('stroke', 'grey')
-            d3.select(this).select('circle').attr('fill', 'steelblue').attr('stroke', 'steelblue')
-            circle_filled = true;
-        }
-        else {
-            d3.selectAll('circle').attr('fill', 'white').attr('stroke', 'grey')
-            d3.select(this).select('circle').attr('fill', 'white').attr('stroke', 'steelblue')
-            circle_filled = false;
-        };	
+	
+		
+		if(menu2_clicked == true && d == menu2_active) {
+			menu2_clicked = false;
+			menu2_active = 'none';
+			
+			d3.selectAll('circle').attr('fill', 'white').attr('stroke', 'grey')
+            d3.select(this).select('circle').attr('fill', 'white').attr('stroke', 'grey')
+			
+			if(rawData.scale == "cat" ){
+				cat_uni(options);
+			}
+			else if(rawData.scale == "num"){
+				density(options);
+			}
+			else{
+				console.log("Error. Not defined.")
+			}	
+		} else {
+			menu2_active = d;
+			menu2_clicked = true;
+			
+			d3.selectAll('circle').attr('fill', 'white').attr('stroke', 'grey')
+            d3.select(this).select('circle').attr('fill', 'steelblue').attr('stroke', 'grey')
+		
+			try {
+				if(rawData.scale == "cat" ){
+					draw_biCatChart(options, menu2_active);
+				}
+				if(rawData.scale == "num"){
+				   density_bi(options, menu2_active); 
+				}		
+			}
+			catch(error) {
+				d3.selectAll('.chart').remove();
+				d3.select('#chart')
+					.append('svg')
+					.attr('width', w)
+					.attr('height', 300)
+					.attr('class', 'chart')
+					.append('text')
+					.text('Sorry.Not available.')
+					.attr('x', 300)
+					.attr('y', 100) ;
+			};
+		} 
     });	
     
     // Append menu elements (text, circles, behaviour) to menu 3
@@ -909,8 +921,7 @@ function render(rawData){
             // Stack data (normalized or not)
             var stacked = d3.layout.stack().offset(offset)(mapped);
   
-            // Set width, height and padding for missings chart
-            var w2 = 600 - margin.left - margin.right;
+            // Set height and padding for missings chart
             var h2 = 150 - margin.top - margin.bottom;
             var barPadding = 0.2;
             var barOutPadding = 0.1;     
@@ -919,7 +930,7 @@ function render(rawData){
             // Append SVG Element to #chart_missings
             var svg2 = d3.select('#chart_missings')
                 .append('svg')
-                .attr('width', w2 + margin.left + margin.right)
+                .attr('width', w + margin.left + margin.right)
                 .attr('height', h2 + margin.top + margin.bottom)
                 .attr('class', 'chart_missings')
                 .append('g')
@@ -928,7 +939,7 @@ function render(rawData){
             // X-Scale             
             var xScale = d3.scale.ordinal()
                 .domain(stacked[0].map(function(d) { return d.x; }))
-                .rangeRoundBands([0, w2], barPadding, barOutPadding);
+                .rangeRoundBands([0, w], barPadding, barOutPadding);
               
             // Y-Scale   
             var yScale = d3.scale.linear()
