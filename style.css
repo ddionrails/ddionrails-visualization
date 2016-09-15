@@ -87,11 +87,12 @@ path {
 	
 }
 
-.menu2_text{
-	text-anchor: left;
-	fill: grey;
-	font-family: sans-serif;
+
+.chart_nav{
+    font-family: sans-serif;
 	font-size: 11px;
+    color: grey;
+
 }
 
 

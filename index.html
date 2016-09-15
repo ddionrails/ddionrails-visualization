@@ -4,14 +4,18 @@
         <title>Visualization</title>
        <meta charset="utf-8">
        
-       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js" integrity="sha384-THPy051/pYDQGanwU6poAc/hOdQxjnOEXzbT+OuUAFqNqFjL+4IGLBgCJC3ZOShY" crossorigin="anonymous"></script>
-       <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js" integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB" crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js" integrity="sha384-VjEeINv9OSwtWFLAtmc4JCtEJXXBub00gtSnszmspDLCtC0I4z4nqz7rEFbIZLLU" crossorigin="anonymous"></script>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-		<!-- D3.js -->
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        
+        <!-- D3.js -->
 		<script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>  
-		
+
 		<script src="./scripts/render.js"></script>
 		<link rel='stylesheet' href='./style.css' />
                 
@@ -22,13 +26,28 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-8">
-                    <div id="menu"></div>
+                    <div class="btn-toolbar" role="toolbar" aria-label="...">
+                        <div class='btn-group btn-group-sm pull-right' id='dropdown' role='group'></div>
+                    
+                        <div class="btn-group btn-group-sm pull-right" role="group" aria-label="...">
+                            <button type="button" class="btn btn-default opt chart_nav" id="percent">Percent</button>
+                            <button type="button" class="btn btn-default opt chart_nav" id="missings">Hide Missings</button>
+                            <button type="button" class="btn btn-default opt chart_nav" id="weighted">Weighted</button> 
+                        </div>  
+                    </div>
+                </div>
+                <div class="col-md-4">
+                
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
                     <div id="chart"></div>
                     <div id="chart_missings"></div>
                 </div>
-                <div class="col-md-4" style="background-color: grey">
-                    Test Spalte
-                </div>
+                <div class="col-md-4">
+                
+                </div>     
             </div>
         </div>
         
@@ -36,7 +55,7 @@
 		<script>
 		
 			// Set path to data, read data from json-file
-			var path = "./testdata/age.json";
+			var path = "./testdata/edu.json";
 		
 			var rawData;
             d3.json(path, function(json) {
