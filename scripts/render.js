@@ -27,7 +27,7 @@ function render(rawData){
             opt_bi += "<li><a class='opt_bi chart_nav' href='#'>" + i + "</a></li>"
         })        
         
-        d3.select("#dropdown").html(
+        d3.select("#chart_nav_dropdown").html(
                 "<button type='button' class='btn btn-default dropdown-toggle chart_nav' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>More Options " +       
                     "<span class='caret '></span>" +
                 "</button>" +
