@@ -32,7 +32,7 @@ function render(rawData){
                     "<span class='caret '></span>" +
                 "</button>" +
                 "<ul class='dropdown-menu chart_nav'>" +
-                    "<li><a class='opt_bi chart_nav' href='#'>Univariate</a></li>" +
+                    "<li><a class='opt_bi chart_na' href='#'>Univariate (default)</a></li>" +
                     "<li role='separator' class='divider'></li>" + 
                     "<li class='dropdown-header'>Bivariate Options</li>" +
                     opt_bi +                 
@@ -43,9 +43,12 @@ function render(rawData){
     d3.selectAll(".opt_bi").on("click", function(){
         
         menu2_active = this.innerHTML;
+        if(menu2_active == 'Univariate (default)'){
+            menu2_active = 'uni';
+        }
         
         try {
-            if(menu2_active == "Univariate") {
+            if(menu2_active == "uni") {
                 
                 if(rawData.scale == "cat" ){
                     cat_uni(options);
@@ -74,14 +77,14 @@ function render(rawData){
                 .attr('height', 300)
                 .attr('class', 'chart')
                 .append('text')
-                .text('Sorry.Not available.')
+                .text('Not available.')
                 .attr('x', 300)
                 .attr('y', 100) ;
         };    
     });
     
     // Control active option in menu 2, default is 'Univariate'
-    var menu2_active = 'Univariate';
+    var menu2_active = 'uni';
     
     // Add option 'weighted' to menu 3 if available in data modell
     if(!('weighted' in rawData.uni)){
@@ -116,7 +119,7 @@ function render(rawData){
         
         if(options[this.id] == false){
             options[this.id] = true;
-            if(menu2_active == 'Univariate' ){
+            if(menu2_active == 'uni' ){
                 if(rawData.scale == "cat" ){
                     cat_uni(options);
                 }
@@ -135,7 +138,7 @@ function render(rawData){
         }
         else{
             options[this.id] = false;
-            if(menu2_active == 'Univariate' ){
+            if(menu2_active == 'uni' ){
                  if(rawData.scale == "cat" ){
                     cat_uni(options);
                 }
@@ -194,30 +197,30 @@ function render(rawData){
         
         // Create SVG ELement and append to #chart
         var svg = d3.select('#chart')
-                    .append('svg')
-                    .attr('viewBox', '0 0 ' + (w + margin.left + margin.right) + ' ' + (h + margin.top + margin.bottom))
-                    .attr('perserveAspectRatio', 'xMinYMid')
-                    .attr('class', 'chart')
-                    .append('g')
-                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
+            .append('svg')
+            .attr('viewBox', '0 0 ' + (w + margin.left + margin.right) + ' ' + (h + margin.top + margin.bottom))
+            .attr('perserveAspectRatio', 'xMinYMid')
+            .attr('class', 'chart')
+            .append('g')
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
                 
         // Color Scale
-        colors = d3.scale.category20();
+        colors = d3.scale.category20c();
         colors.domain(rData.uni.labels)
         
         // Append rect elements and map with data
         rects = svg.selectAll('rect')
-                .data(data)
-                .enter()
-                .append('rect')
-                .style('fill', function(d){ return colors(d[1]); })
-                .attr('class', 'rects');
+            .data(data)
+            .enter()
+            .append('rect')
+            .style('fill', function(d){ return colors(d[1]); })
+            .attr('class', 'rects');
        
         text = svg.selectAll('text')
-                .data(data)
-                .enter()
-                .append('text')
-                .attr('class', 'text');
+            .data(data)
+            .enter()
+            .append('text')
+            .attr('class', 'text');
         
         // Define text labels 
         if(options.percent == true){
@@ -228,7 +231,7 @@ function render(rawData){
         else {
             format = d3.format('');
             text.text(function(d) {return (d[2])})	
-        }			
+        }
         
         // X-Scale
         var xScale = d3.scale.linear()
@@ -241,7 +244,7 @@ function render(rawData){
                         
         // Y-Scale
         var yScale = d3.scale.ordinal()
-            .domain(data.map(function(d){return ("[" + d[0] + "] " + d[1])}))
+            .domain(data.map(function(d){return (d[1])}))
             .rangeRoundBands([h, 0]);
                                       
         // X-Axis
@@ -257,7 +260,15 @@ function render(rawData){
         // Y-Axis
         var yAxis = d3.svg.axis()
             .scale(yScale)
-            .orient('left');				
+            .orient('left')
+            .tickFormat(function(d) {
+                if(d.length > 30){
+                    str = d.substr(0,30) + '...'	 
+                } else {
+                   str = d
+                }
+                return str;
+            });	
   
         svg.append('g')
             .call(yAxis)
@@ -270,17 +281,17 @@ function render(rawData){
 
         // Draw bars
         rects.attr('x', 0) 
-             .attr('y', function(d) {return yScale("[" + d[0] + "] " + d[1])})
+             .attr('y', function(d) {return yScale(d[1])})
              .attr('width', function(d){return xScale(d[2])}) 
              .attr('height', (h / data.length) - barPadding)
              .on('mouseover', function(d) {
                     tip.transition()			
-                        .style('opacity', .9);		
+                        .style('opacity', 1);		
                     tip.html(function() {
                         if(options.percent == true){
-                            return '<strong>' + "[" + d[0] + "] " + d[1] + ': </strong>' + format(d[2] / sum)
+                            return '<strong>' + d[1] + ': </strong>' + format(d[2] / sum)
                         } else {
-                           return '<strong>' + "[" + d[0] + "] " + d[1] + ': </strong>' + format(d[2])	 
+                           return '<strong>' + d[1] + ': </strong>' + format(d[2])	 
                         }
                     });
                     tip.style('left', (d3.event.pageX) + 'px')		
@@ -294,7 +305,7 @@ function render(rawData){
         //Append Labels
         barHeight = (h / data.length) - barPadding; 
         text.attr('x', function(d) {return xScale(d[2]) + 3})
-            .attr('y', function(d) {return yScale("[" + d[0] + "] " + d[1]) + (barHeight/2) + 2});
+            .attr('y', function(d) {return yScale(d[1]) + (barHeight/2) + 2});
 
     }
 
@@ -313,7 +324,7 @@ function render(rawData){
         var rData = JSON.parse(JSON.stringify(rawData));
         
         // Color Scale
-        var colors = d3.scale.category20()
+        var colors = d3.scale.category20c()
             .domain(rData.bi[menu2_active].labels);
         
         // Show missings / hide missings
@@ -465,8 +476,8 @@ function render(rawData){
             .attr('class', 'rect')
             .on('mouseover', function(d, i) {
                 tip.transition()			
-                    .style('opacity', .9);		
-                tip.html('<strong>' + "[" + d.code + "] " +  d.label + ':</strong> ' + format(d.y))	
+                    .style('opacity', 1);		
+                tip.html('<strong>' + d.label + ':</strong> ' + format(d.y))	
                     .style('left', (d3.event.pageX) + 'px')		
                     .style('top', (d3.event.pageY) + 'px');	
             })					
@@ -610,6 +621,7 @@ function render(rawData){
                         .append('text')
                         .attr('class', 'text');
         
+
             // Show missings  in % or not
             sumAllData = sumValidData + d3.sum(rData.uni.missings[dataType_missings]);
             if(options.percent == true){
@@ -617,6 +629,7 @@ function render(rawData){
                 text.text(function(d) {return format(d[2] / sumAllData)}) 					
             }
             else{
+                format = d3.format('');
                 text.text(function(d) {return (d[2])});	
             }			
 
@@ -631,7 +644,7 @@ function render(rawData){
                             
             // Y-Scale missings
             var yScale = d3.scale.ordinal()
-                .domain(dataMissings.map(function(d){return ("[" + d[0] + "] " + d[1]) }))
+                .domain(dataMissings.map(function(d){return (d[1])}))
                 .rangeRoundBands([h, 0]);
                     
                         
@@ -648,22 +661,53 @@ function render(rawData){
             // Y-Axis missings
             var yAxis = d3.svg.axis()
                 .scale(yScale)
-                .orient('left');				
+                .orient('left')
+                .tickFormat(function(d) {
+                    if(d.length > 30){
+                        str = d.substr(0,30) + '...'	 
+                    } else {
+                       str = d
+                    }
+                    return str;
+                });                
    
             svg2.append('g')
                 .call(yAxis)
-                .attr('class', 'axis');			
+                .attr('class', 'axis');	
+
+            // Tooltip: on mouseover show label and values
+            var tip = d3.select('body').append('tip')	
+                .attr('class', 'tooltip')				
+                .style('opacity', 0);  
             
             // Draw bars and append labels 
             rects.attr('x', 0) 
-                 .attr('y', function(d) {return yScale("[" + d[0] + "] " + d[1])})
-                 .attr('width', function(d){ return xScale(d[2])}) 
-                 .attr('height', (h / dataMissings.length) - 1);		
+                .attr('y', function(d) {return yScale(d[1])})
+                .attr('width', function(d){ return xScale(d[2])}) 
+                .attr('height', (h / dataMissings.length) - 1)
+                .on('mouseover', function(d) {		
+                    tip.transition()			
+                        .style('opacity', 1);		
+                    tip.html(function(){
+                        if(options.percent == true){
+                            return '<strong>' + d[1] + ': </strong>' + format(d[2] / sumAllData)
+                        } else {
+                            return '<strong>' + d[1] + ': </strong>' + format(d[2])	 
+                        }   
+                    })
+                    tip.style('left', (d3.event.pageX) + 'px')		
+                    tip.style('top', (d3.event.pageY) + 'px');	
+                })					
+                .on('mouseout', function(d) {		
+                    tip.transition()			
+                        .style('opacity', 0);	
+                });
+            
 
 
             barHeight = (h / dataMissings.length) - 1;
             text.attr('x', function(d) { return xScale(d[2])+ 3})
-                .attr('y', function(d) {return yScale("[" + d[0] + "] " + d[1]) + (barHeight/2)+2});
+                .attr('y', function(d) {return yScale(d[1]) + (barHeight/2)+2});
                 
          
 	   }
@@ -915,6 +959,11 @@ function render(rawData){
                         return colors[i];
                 }});
           
+            // Tooltip: on mouseover show label and values
+            var tip = d3.select('body').append('tip')	
+                .attr('class', 'tooltip')				
+                .style('opacity', 0);  
+            
             var rect = layer.selectAll('rect')
                 .data(function(d){return d})
                 .enter()
@@ -926,8 +975,8 @@ function render(rawData){
                 .attr('class', 'rect')
                 .on('mouseover', function(d) {		
                     tip.transition()			
-                        .style('opacity', .9);		
-                    tip.html('<strong>' + "[" + d.code + "] " + d.label + ': </strong>' + format(d.y))	
+                        .style('opacity', 1);		
+                    tip.html('<strong>' + d.label + ': </strong>' + format(d.y))	
                         .style('left', (d3.event.pageX) + 'px')		
                         .style('top', (d3.event.pageY) + 'px');	
                 })					
