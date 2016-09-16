@@ -32,7 +32,7 @@ function render(rawData){
                     "<span class='caret '></span>" +
                 "</button>" +
                 "<ul class='dropdown-menu chart_nav'>" +
-                    "<li><a class='opt_bi chart_na' href='#'>Univariate (default)</a></li>" +
+                    "<li><a class='opt_bi chart_nav' href='#'>Univariate (default)</a></li>" +
                     "<li role='separator' class='divider'></li>" + 
                     "<li class='dropdown-header'>Bivariate Options</li>" +
                     opt_bi +                 
