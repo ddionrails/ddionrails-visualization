@@ -1,5 +1,5 @@
 {
-  "name": "@ddionrails/visualization",
+  "name": "ddionrails-visualization",
   "version": "0.1.0",
   "description": "Visualizations for DDI on Rails 2.",
   "directories": {
@@ -8,6 +8,15 @@
   "files": [
     "css/",
     "js/"
+  ],
+  "main": "js/render.js",
+  "maintainers": [
+    {
+      "name": "mhebing"
+    },
+    {
+      "name": "castolpe"
+    }
   ],
   "repository": {
     "type": "git",
