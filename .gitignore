@@ -4,3 +4,6 @@ docs/_build
 *tmp
 *index_new
 
+.idea/
+node_modules/
+
