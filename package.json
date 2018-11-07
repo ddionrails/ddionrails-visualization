@@ -10,6 +10,9 @@
     "type": "git",
     "url": "git+https://github.com/ddionrails/visualization.git"
   },
+  "author": {
+    "name": "Marcel Hebing"
+  },
   "files": [
     "css/",
     "js/"
