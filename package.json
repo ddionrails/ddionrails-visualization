@@ -2,13 +2,13 @@
   "name": "ddionrails-visualization",
   "version": "0.1.0",
   "description": "Visualizations for DDI on Rails 2.",
-  "homepage": "https://github.com/ddionrails/visualization#readme",
+  "homepage": "https://github.com/ddionrails/ddionrails-visualization#readme",
   "bugs": {
-    "url": "https://github.com/ddionrails/visualization/issues"
+    "url": "https://github.com/ddionrails/ddionrails-visualization/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ddionrails/visualization.git"
+    "url": "git+https://github.com/ddionrails/ddionrails-visualization.git"
   },
   "license": "AGPL-3.0-or-later",
   "author": {
