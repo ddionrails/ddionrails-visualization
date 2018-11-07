@@ -2,31 +2,35 @@
   "name": "ddionrails-visualization",
   "version": "0.1.0",
   "description": "Visualizations for DDI on Rails 2.",
-  "directories": {
-    "doc": "docs"
+  "homepage": "https://github.com/ddionrails/ddionrails-visualization#readme",
+  "bugs": {
+    "url": "https://github.com/ddionrails/ddionrails-visualization/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ddionrails/ddionrails-visualization.git"
+  },
+  "license": "AGPL-3.0-or-later",
+  "author": {
+    "name": "Marcel Hebing"
   },
   "files": [
     "css/",
     "js/"
   ],
   "main": "js/render.js",
-  "maintainers": [
-    {
-      "name": "mhebing"
-    },
-    {
-      "name": "castolpe"
-    }
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ddionrails/visualization.git"
+  "directories": {
+    "doc": "docs"
   },
-  "bugs": {
-    "url": "https://github.com/ddionrails/visualization/issues"
-  },
-  "homepage": "https://github.com/ddionrails/visualization#readme",
   "dependencies": {
     "d3": "^3.5.17"
-  }
+  },
+  "maintainers": [
+    {
+      "name": "Marcel Hebing"
+    },
+    {
+      "name": "Carolin Stolpe"
+    }
+  ]
 }
