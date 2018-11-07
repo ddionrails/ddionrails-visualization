@@ -10,6 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/ddionrails/visualization.git"
   },
+  "license": "AGPL-3.0-or-later",
   "author": {
     "name": "Marcel Hebing"
   },
