@@ -1209,3 +1209,6 @@ function resize() {
     })
     .trigger("resize");
 }
+
+export {margin, w, h_menu, barPadding};
+export {render, resize};
