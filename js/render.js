@@ -2,7 +2,7 @@
  * ddionrails-visualization - render.js
  * Copyright 2015-2018
  * Licensed under AGPL (https://github.com/ddionrails/ddionrails-visualization/blob/master/LICENSE)
-*/
+ */
 
 // Global vars
 
@@ -162,6 +162,9 @@ function render(rawData) {
     d3.selectAll(".chart").remove();
     var rData = rawData;
 
+    var hideMissings;
+    var dataType;
+
     // Flags for options to modify data or not
     if (options.missings == true) {
       hideMissings = true;
@@ -175,13 +178,18 @@ function render(rawData) {
     }
 
     // Build data modell for chart
-    data = [];
-    for (i = 0; i < rData.uni[dataType].length; i++) {
+    var data = [];
+
+    for (var i = 0; i < rData.uni[dataType].length; i++) {
       if (hideMissings == true && rData.uni.missings[i]) {
         continue;
       }
 
-      tmp = [rData.uni.values[i], rData.uni.labels[i], rData.uni[dataType][i]];
+      var tmp = [
+        rData.uni.values[i],
+        rData.uni.labels[i],
+        rData.uni[dataType][i]
+      ];
       data.push(tmp);
     }
     // Compute height of chart by number of data elements
@@ -204,11 +212,11 @@ function render(rawData) {
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // Color Scale
-    colors = d3.scale.category20c();
+    var colors = d3.scale.category20c();
     colors.domain(rData.uni.labels);
 
     // Append rect elements and map with data
-    rects = svg
+    var rects = svg
       .selectAll("rect")
       .data(data)
       .enter()
@@ -218,7 +226,7 @@ function render(rawData) {
       })
       .attr("class", "rects");
 
-    text = svg
+    var text = svg
       .selectAll("text")
       .data(data)
       .enter()
@@ -226,6 +234,7 @@ function render(rawData) {
       .attr("class", "text");
 
     // Define text labels
+    var format;
     if (options.percent == true) {
       var sum = d3.sum(
         data.map(function(d) {
@@ -281,6 +290,7 @@ function render(rawData) {
       .attr("transform", "translate(0," + h + ")");
 
     // Y-Axis
+    var str;
     var yAxis = d3.svg
       .axis()
       .scale(yScale)
@@ -334,7 +344,7 @@ function render(rawData) {
       });
 
     //Append Labels
-    barHeight = h / data.length - barPadding;
+    var barHeight = h / data.length - barPadding;
     text
       .attr("x", function(d) {
         return xScale(d[2]) + 3;
@@ -576,7 +586,7 @@ function render(rawData) {
     var data = [];
     var range = d3.range(rData.uni.min, rData.uni.max + 1, rData.uni.by);
     range.map(function(d, i) {
-      tmp = [range[i], rData.uni[dataType][i]];
+      var tmp = [range[i], rData.uni[dataType][i]];
       data.push(tmp);
     });
 
@@ -646,8 +656,8 @@ function render(rawData) {
 
       // Prepare data
       var dataMissings = [];
-      for (i = 0; i < rData.uni.missings[dataType_missings].length; i++) {
-        tmp = [
+      for (var i = 0; i < rData.uni.missings[dataType_missings].length; i++) {
+        var tmp = [
           rData.uni.missings.values[i],
           rData.uni.missings.labels[i],
           rData.uni.missings[dataType_missings][i]
@@ -720,7 +730,7 @@ function render(rawData) {
         .attr("class", "rects");
 
       // Append labels
-      text = svg2
+      var text = svg2
         .selectAll("text")
         .data(dataMissings)
         .enter()
@@ -779,6 +789,7 @@ function render(rawData) {
         .attr("transform", "translate(0," + h + ")");
 
       // Y-Axis missings
+      var str;
       var yAxis = d3.svg
         .axis()
         .scale(yScale)
@@ -832,7 +843,7 @@ function render(rawData) {
           tip.transition().style("opacity", 0);
         });
 
-      barHeight = h / dataMissings.length - 1;
+      var barHeight = h / dataMissings.length - 1;
       text
         .attr("x", function(d) {
           return xScale(d[2]) + 3;
@@ -1002,6 +1013,7 @@ function render(rawData) {
     // Missings Chart //
 
     if (options.missings == false) {
+      var format;
       if (options.percent == true) {
         offset = "expand";
         format = d3.format("0.1%");
@@ -1210,5 +1222,4 @@ function resize() {
     .trigger("resize");
 }
 
-export {margin, w, h_menu, barPadding};
-export {render, resize};
+export { margin, w, h_menu, barPadding, render, resize };
