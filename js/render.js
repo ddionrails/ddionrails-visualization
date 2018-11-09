@@ -1,3 +1,9 @@
+/*!
+ * ddionrails-visualization - render.js
+ * Copyright 2015-2018
+ * Licensed under AGPL (https://github.com/ddionrails/ddionrails-visualization/blob/master/LICENSE)
+*/
+
 // Global vars
 
 // Set margin, width, padding for charts and menu
